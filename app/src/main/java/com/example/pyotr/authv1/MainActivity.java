@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -20,9 +21,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends Activity implements  View.OnClickListener{
 
@@ -45,11 +50,17 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private ConstraintLayout layout1;
 
 
+    DatabaseReference databaseUsers;
+
+
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        databaseUsers= FirebaseDatabase.getInstance().getReference("user");
+
 
         progressDialog=new ProgressDialog(this);
 
@@ -69,7 +80,8 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         editTextCompanyName=(EditText) findViewById(R.id.editTextCompanyName);
         editTextCompanyEmployees=(EditText) findViewById(R.id.editTextCompanyEmployees);
         editTextCompanyField=(EditText) findViewById(R.id.editTextCompanyField);
-        mAuth = FirebaseAuth.getInstance();
+
+       mAuth = FirebaseAuth.getInstance();
 
         buttonRegister.setOnClickListener(this);
         buttonStep2.setOnClickListener(this);
@@ -129,10 +141,11 @@ public  void setVisibleAngajator()
 
                 //inca 2 layout pentru angajat sau angajator
 
+               verificationUser();
                if(radioButton1.isChecked())
                {
                    //angajator
-                  // registerUser();
+
                    setVisibleAngajator();
                    setVisibleOff();
                   //layout1.setVisibility(View.VISIBLE);
@@ -146,11 +159,47 @@ public  void setVisibleAngajator()
                 break;
             case R.id.buttonRegister2:
                 //inregistrare angajator email.password,company name,nr de angaati,tipul companiei
+                addUser();
+                registerUser();
+                startActivity(new Intent(getApplicationContext(),Login.class));
                 break;
         }
     }
 
 
+    private void verificationUser()
+    {
+        String email = editTextEmail.getText().toString();
+        String password = editTextPassword.getText().toString();
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Introduceti email");
+            editTextEmail.requestFocus();
+            return;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Introduceti un email valid");
+            editTextEmail.requestFocus();
+            return;
+        }
+        if (password.isEmpty()) {
+            editTextPassword.setError("Introduceti parola");
+            editTextPassword.requestFocus();
+            return;
+        }
+        if (password.length() < 6)
+        {
+            editTextPassword.setError("Lungimea parolei trebuie sa fie mai lunga decat 6");
+            editTextPassword.requestFocus();
+            return;
+        }
+        if(!(radioButton2.isChecked()||radioButton1.isChecked()))
+        {
+            Toast.makeText(getApplicationContext(), "Pentru a continua bifati casutele de mai jos.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     private void registerUser() {
         String email = editTextEmail.getText().toString();
@@ -234,6 +283,54 @@ public  void setVisibleAngajator()
                     break;
         }
     }*/
+
+
+    public void addUser()
+    {
+        String email = editTextEmail.getText().toString();
+        String password = editTextPassword.getText().toString();
+        String companyName=editTextCompanyName.getText().toString();
+
+        String companyField=editTextCompanyField.getText().toString();
+        int numberOfEmployees = 0;
+
+        try {
+            numberOfEmployees = Integer.parseInt(editTextCompanyEmployees.getText().toString());
+        } catch(NumberFormatException nfe) {
+            System.out.println("Could not parse " + nfe);
+        }
+
+        if(!TextUtils.isEmpty(email))
+        {
+
+            String id= databaseUsers.push().getKey();
+            User user=new User(id,email,password,companyName,numberOfEmployees,companyField);
+            databaseUsers.child(id).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    // Write was successful!
+                    Log.d(TAG, "adaugareInBaza de date:success");
+
+                    // ...
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugareInBaza de date:Failed");
+                        }
+                    });
+            Toast.makeText(this,"User adaugat", Toast.LENGTH_LONG).show();
+
+        }
+        else
+        {
+            Toast.makeText(this,"Introduceti un nume",Toast.LENGTH_LONG).show();
+        }
+    }
 
 
 

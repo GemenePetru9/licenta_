@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">authv1</string>
+    <string name="buttonLogout">Log out</string>
+    <string name="textViewUser"></string>
+    <string name="textViewInfo">Please enter this basic information to help us set up your account</string>
+
+
+
+</resources>

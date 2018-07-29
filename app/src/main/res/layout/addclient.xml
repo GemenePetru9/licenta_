@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+    <TextView
+        android:id="@+id/textViewAdaugareEmployees"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/adaugare_clienti"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/darker_gray"/>
+
+
+    <EditText
+        android:id="@+id/editTextFirstNameEmp1"
+        android:layout_width="174dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/editTextLastNameEmp1"
+        android:layout_marginStart="17dp"
+        android:layout_marginLeft="17dp"
+        android:hint="First Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/editTextLastNameEmp1"
+        android:layout_width="185dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textViewAdaugareEmployees"
+        android:layout_marginTop="-5dp"
+        android:hint="Last Name"
+        android:inputType="textPersonName" />
+
+    <Spinner
+        android:id="@+id/type_spinner"
+        android:layout_width="147dp"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/editTextFirstNameEmp1"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="3"
+        android:entries="@array/types"
+        android:gravity="center_vertical" />
+
+
+    <GridView
+        android:id="@+id/gridView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:numColumns="1" >
+
+    </GridView>
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/type_spinner"
+        android:layout_centerHorizontal="true"
+        android:text="Click Here to Add Client" />
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/type_spinner"
+        android:layout_alignParentRight="true"
+        android:text="Finish" />
+
+
+
+</RelativeLayout>

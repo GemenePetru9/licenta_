@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:orientation="vertical"
+    android:id="@+id/parent_linear_layout"
+
+    >
+
+    <TextView
+        android:id="@+id/textViewAdaugareEmployees"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/adaugare_clienti"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/darker_gray"/>
+
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:id="@+id/layoutElemente">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout1">
+
+
+            <EditText
+                android:id="@+id/editTextFirstNameEmp1"
+                android:layout_width="174dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:hint="First Name"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/editTextLastNameEmp1"
+                android:layout_width="185dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:hint="Last Name"
+                android:inputType="textPersonName" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Spinner
+                android:id="@+id/type_spinner"
+                android:layout_width="147dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+
+                android:layout_weight="3"
+                android:entries="@array/types"
+                android:gravity="center_vertical" />
+
+
+            <Button
+                android:id="@+id/delete_button"
+                android:layout_width="51dp"
+                android:layout_height="36dp"
+                android:layout_alignParentBottom="true"
+
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_weight="1"
+                android:background="@android:drawable/ic_delete"
+                android:onClick="onDelete" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/add_field_button"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+
+
+            android:background="#555"
+            android:onClick="onAddField"
+            android:paddingLeft="5dp"
+            android:text="Add Shift"
+            android:textColor="#FFF" />
+
+        <Button
+            android:id="@+id/btnSendData"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+
+            android:layout_gravity="center_horizontal"
+            android:background="#555"
+            android:onClick="onFinish"
+            android:paddingLeft="5dp"
+            android:text="Finish"
+            android:textColor="#FFF" />
+    </LinearLayout>
+
+
+
+</LinearLayout>
+
+</ScrollView>

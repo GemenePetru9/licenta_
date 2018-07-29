@@ -14,6 +14,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -47,7 +48,9 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private RadioGroup radioGroup;
     private RadioButton radioButton1;
     private  RadioButton radioButton2;
-    private ConstraintLayout layout1;
+    private LinearLayout layout1;
+
+    private Button btnAddEmployees;
 
 
     DatabaseReference databaseUsers;
@@ -59,13 +62,15 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnAddEmployees=(Button) findViewById(R.id.btnAddEmp) ;
+
         databaseUsers= FirebaseDatabase.getInstance().getReference("user");
 
 
         progressDialog=new ProgressDialog(this);
 
 
-        layout1=(ConstraintLayout) findViewById(R.id.layout1);
+        layout1=(LinearLayout) findViewById(R.id.layout1);
 
         textInfo=(TextView) findViewById(R.id.textViewInfo);
         buttonStep2=(Button)findViewById(R.id.buttonRegister2) ;
@@ -88,6 +93,11 @@ public class MainActivity extends Activity implements  View.OnClickListener{
 
         findViewById(R.id.textViewLog).setOnClickListener(this);
 
+        btnAddEmployees.setOnClickListener(this);
+
+
+
+
 
 
 /*
@@ -102,6 +112,7 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         };*/
 
     }
+
 /*
    @Override
     public void onStart() {
@@ -109,6 +120,7 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         // Check if user is signed in (non-null) and update UI accordingly.
         mAuth.addAuthStateListener(mAuthListener);
     }
+
 */
     public void setVisibleOff()
 {
@@ -162,6 +174,9 @@ public  void setVisibleAngajator()
                 addUser();
                 registerUser();
                 startActivity(new Intent(getApplicationContext(),Login.class));
+                break;
+            case R.id.btnAddEmp:
+                startActivity(new Intent(getApplicationContext(),AddEmployees.class));
                 break;
         }
     }

@@ -3,7 +3,14 @@
     <string name="buttonLogout">Log out</string>
     <string name="textViewUser"></string>
     <string name="textViewInfo">Please enter this basic information to help us set up your account</string>
+    <string name="adaugare_clienti">Adaugare clienti</string>
 
 
+
+    <string-array name="types">
+        <item>Position A</item>
+        <item>Position B</item>
+        <item>Position C</item>
+    </string-array>
 
 </resources>

@@ -23,15 +23,22 @@
         android:background="@android:color/darker_gray"/>
 
 
+    <TextView
+        android:id="@+id/textViewNumarEmp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textViewAdaugareEmployees"
+        android:layout_alignLeft="@+id/textViewAdaugareEmployees"
+        android:layout_below="@+id/textViewAdaugareEmployees"
+        android:layout_marginTop="-5dp" />
+
     <EditText
         android:id="@+id/editTextFirstNameEmp1"
         android:layout_width="174dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/editTextLastNameEmp1"
-        android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
+        android:layout_alignStart="@+id/textViewAdaugareEmployees"
+        android:layout_alignLeft="@+id/textViewAdaugareEmployees"
+        android:layout_below="@+id/textViewNumarEmp"
         android:hint="First Name"
         android:inputType="textPersonName" />
 
@@ -41,8 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/textViewAdaugareEmployees"
-        android:layout_marginTop="-5dp"
+        android:layout_alignTop="@+id/editTextFirstNameEmp1"
         android:hint="Last Name"
         android:inputType="textPersonName" />
 

@@ -44,7 +44,11 @@ public class AddEmployees extends Activity {
     ArrayAdapter<Client> arrayadapter;
     EditText edittext1;
     EditText edittext2;
+    TextView textViewNumarAngajati;
     String GetItem;
+    private int numberOfEmp=0;
+    private String value="";
+    private int dif=0;
 
     DatabaseReference databaseClienti;
 
@@ -57,10 +61,29 @@ public class AddEmployees extends Activity {
         setContentView(R.layout.addclient);
         databaseClienti= FirebaseDatabase.getInstance().getReference("client");
 
+        //get number of employyesss
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            value = extras.getString("key");
+            //The key argument here must match that used in the other activity
+        }
+        try
+        {
+            numberOfEmp=Integer.parseInt(value);
+
+        }
+        catch (NumberFormatException e)
+        {
+            System.out.println(e);
+        }
+
+
         gridview = (GridView)findViewById(R.id.gridView1);
 
         button = (Button)findViewById(R.id.button1);
         btnFinish=(Button) findViewById(R.id.button2);
+        textViewNumarAngajati=(TextView)findViewById(R.id.textViewNumarEmp) ;
+        textViewNumarAngajati.setText("Introduceti "+numberOfEmp+" angajati pentru a contiua");
 
         edittext1 = (EditText)findViewById(R.id.editTextFirstNameEmp1);
         edittext2 = (EditText)findViewById(R.id.editTextLastNameEmp1);
@@ -79,7 +102,10 @@ public class AddEmployees extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
+                if(counter<numberOfEmp)
+                {
                 counter++;
+                dif=numberOfEmp-counter;
                 //GetItem = counter+"."+edittext1.getText().toString()+" "+edittext2.getText().toString();
                 Client user=new Client(edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
 
@@ -87,6 +113,12 @@ public class AddEmployees extends Activity {
                 listaClienti.add(listaClienti.size(),user);
                 edittext2.setText("");
                 edittext1.setText("");
+                if(dif!=0) {
+                    textViewNumarAngajati.setText("Introduceti " + dif + " angajati pentru a contiua");
+                }
+                else {
+                    textViewNumarAngajati.setText("Puteti continua");
+                }
 
 
                 arrayadapter.notifyDataSetChanged();
@@ -94,16 +126,26 @@ public class AddEmployees extends Activity {
                 Toast.makeText(getApplicationContext(), "Item Added SuccessFully", Toast.LENGTH_LONG).show();
 
 
-            }
+            }}
         });
         btnFinish.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                if(counter==0)
+                 dif=numberOfEmp-counter;
+                if(counter!=numberOfEmp)
                 {
-                    Toast.makeText(getApplicationContext(), "Introduceti cel putin un client pentru a continua", Toast.LENGTH_LONG).show();
+
+                    if(dif==1)
+                    { Toast.makeText(getApplicationContext(), "Introduceti inca un angajat pentru a continua", Toast.LENGTH_LONG).show();
+
+                    }
+                    else if(dif>1) {
+                        Toast.makeText(getApplicationContext(), "Introduceti " + dif + " angajat pentru a continua", Toast.LENGTH_LONG).show();
+                    }
+
+
                 }
                 else
                 {
@@ -120,7 +162,9 @@ public class AddEmployees extends Activity {
                         addUser(nume,prenume,pozitie);
 
                     }*/
-                    startActivity(new Intent(getApplicationContext(),Succes.class));
+                   //startActivity(new Intent(getApplicationContext(),Succes.class));
+
+                    startActivity(new Intent(getApplicationContext(),TabelClienti.class));
                    // addUser();
                    /* for (Client car : listaClienti) {
                        System.out.print("For loop:"+car.toString());

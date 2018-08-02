@@ -20,8 +20,8 @@
         </activity>
 
         <activity android:name=".Login"></activity>
-        <activity android:name=".Succes"></activity>
         <activity android:name=".AddEmployees"></activity>
+        <activity android:name=".TabelClienti"></activity>
 
     </application>
 

@@ -2,7 +2,9 @@ package com.example.pyotr.authv1;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,10 +13,12 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -51,6 +55,7 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private LinearLayout layout1;
 
     private Button btnAddEmployees;
+    private Button btnSlider;
 
 
     DatabaseReference databaseUsers;
@@ -63,6 +68,7 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         setContentView(R.layout.activity_main);
 
         btnAddEmployees=(Button) findViewById(R.id.btnAddEmp) ;
+        btnSlider=(Button) findViewById(R.id.btnSlider);
 
         databaseUsers= FirebaseDatabase.getInstance().getReference("user");
 
@@ -70,7 +76,7 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         progressDialog=new ProgressDialog(this);
 
 
-        layout1=(LinearLayout) findViewById(R.id.layout1);
+        //layout1=(LinearLayout) findViewById(R.id.layout1);
 
         textInfo=(TextView) findViewById(R.id.textViewInfo);
         buttonStep2=(Button)findViewById(R.id.buttonRegister2) ;
@@ -94,6 +100,8 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         findViewById(R.id.textViewLog).setOnClickListener(this);
 
         btnAddEmployees.setOnClickListener(this);
+        btnSlider.setOnClickListener(this);
+
 
 
 
@@ -141,6 +149,7 @@ public  void setVisibleAngajator()
     buttonStep2.setVisibility(View.VISIBLE);
 
 }
+
     @Override
     public void onClick(View view) {
 
@@ -171,15 +180,28 @@ public  void setVisibleAngajator()
                 break;
             case R.id.buttonRegister2:
                 //inregistrare angajator email.password,company name,nr de angaati,tipul companiei
-                addUser();
-                registerUser();
-                startActivity(new Intent(getApplicationContext(),Login.class));
+                //adaugare clienti view
+
+               // addUser();
+                //registerUser();
+               // startActivity(new Intent(getApplicationContext(),Login.class));
+                //trimitem nr de angajati
+
+                String value=editTextCompanyEmployees.getText().toString();
+                Intent intent = new Intent(getBaseContext(), AddEmployees.class);
+                intent.putExtra("key",value);
+                startActivity(intent);
                 break;
             case R.id.btnAddEmp:
                 startActivity(new Intent(getApplicationContext(),AddEmployees.class));
                 break;
+
+
+
         }
     }
+
+
 
 
     private void verificationUser()

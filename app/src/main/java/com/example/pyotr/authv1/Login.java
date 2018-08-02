@@ -116,7 +116,7 @@ public class Login extends Activity implements View.OnClickListener{
 
                             finish();
                             //setContentView(R.layout.succes);//daca a reusit login ===>succes
-                            startActivity(new Intent(getApplicationContext(),Succes.class));
+                            //startActivity(new Intent(getApplicationContext(),Succes.class));
                             //FirebaseUser user = mAuth.getCurrentUser();
                             //updateUI(user);
                             //startActivity(new Intent(getApplicationContext(),Succes.class));

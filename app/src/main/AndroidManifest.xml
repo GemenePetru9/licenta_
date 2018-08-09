@@ -22,6 +22,7 @@
         <activity android:name=".Login"></activity>
         <activity android:name=".AddEmployees"></activity>
         <activity android:name=".TabelClienti"></activity>
+        <activity android:name=".Login_Emp"></activity>
 
     </application>
 

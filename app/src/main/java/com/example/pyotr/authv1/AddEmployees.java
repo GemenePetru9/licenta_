@@ -21,13 +21,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,15 +42,17 @@ public class AddEmployees extends Activity {
     GridView gridview;
     Button button;
     Button btnFinish;
+    Button btnUser;
     Spinner spinner;
     // List<String> ITEM_LIST;
-    List<Client> listaClienti;
-    ArrayAdapter<Client> arrayadapter;
+    List<Client2> listaClienti;
+    ArrayAdapter<Client2> arrayadapter;
     EditText edittext1;
     EditText edittext2;
     TextView textViewNumarAngajati;
     String GetItem;
     private int numberOfEmp=0;
+    private String userid="";
     private String value="";
     private int dif=0;
 
@@ -64,10 +70,15 @@ public class AddEmployees extends Activity {
         //get number of employyesss
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            value = extras.getString("key");
+            numberOfEmp= extras.getInt("key");
+
+            /*String[] result=date.split(" ");
+            userid=result[0];
+            value=result[1];*/
+
             //The key argument here must match that used in the other activity
         }
-        try
+       /* try
         {
             numberOfEmp=Integer.parseInt(value);
 
@@ -75,11 +86,12 @@ public class AddEmployees extends Activity {
         catch (NumberFormatException e)
         {
             System.out.println(e);
-        }
+        }*/
 
 
         gridview = (GridView)findViewById(R.id.gridView1);
 
+        btnUser=(Button)findViewById(R.id.ShowUser) ;
         button = (Button)findViewById(R.id.button1);
         btnFinish=(Button) findViewById(R.id.button2);
         textViewNumarAngajati=(TextView)findViewById(R.id.textViewNumarEmp) ;
@@ -90,11 +102,33 @@ public class AddEmployees extends Activity {
         spinner=(Spinner) findViewById(R.id.type_spinner);
 
         // ITEM_LIST = new ArrayList<String>();
-        listaClienti=new ArrayList<Client>();
+        listaClienti=new ArrayList<Client2>();
 
-        arrayadapter = new ArrayAdapter<Client>(getApplicationContext(),android.R.layout.simple_list_item_1,listaClienti );
+        arrayadapter = new ArrayAdapter<Client2>(getApplicationContext(),android.R.layout.simple_list_item_1,listaClienti );
 
 
+        btnUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+               FirebaseUser userCurrent = FirebaseAuth.getInstance().getCurrentUser();
+
+               userid=userCurrent.getUid();
+                System.out.println("User current:"+userid);
+
+               /* if (userCurrent != null) {
+                    // User is signed in
+                    String name = userCurrent.getDisplayName();
+                    String email = userCurrent.getEmail();
+                    String uid = userCurrent.getUid();
+                    System.out.println("User current:"+email+" uid:"+uid);
+
+                } else {
+                    // No user is signed in
+                    System.out.println("User current:NU este Logat");
+                }*/
+            }
+        });
         gridview.setAdapter(arrayadapter);
 
         button.setOnClickListener( new View.OnClickListener() {
@@ -104,36 +138,66 @@ public class AddEmployees extends Activity {
                 // TODO Auto-generated method stub
                 if(counter<numberOfEmp)
                 {
-                counter++;
-                dif=numberOfEmp-counter;
-                //GetItem = counter+"."+edittext1.getText().toString()+" "+edittext2.getText().toString();
-                Client user=new Client(edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
+                    counter++;
+                    dif=numberOfEmp-counter;
+                    //GetItem = counter+"."+edittext1.getText().toString()+" "+edittext2.getText().toString();
 
-                // ITEM_LIST.add(ITEM_LIST.size(),GetItem);
-                listaClienti.add(listaClienti.size(),user);
-                edittext2.setText("");
-                edittext1.setText("");
-                if(dif!=0) {
-                    textViewNumarAngajati.setText("Introduceti " + dif + " angajati pentru a contiua");
-                }
-                else {
-                    textViewNumarAngajati.setText("Puteti continua");
-                }
+                    FirebaseUser usr= FirebaseAuth.getInstance().getCurrentUser();
+                    String uid = usr.getUid();
+                    DatabaseReference adminRef = FirebaseDatabase
+                            .getInstance()
+                            .getReference("Employees")
+                            .child(uid);
+                    DatabaseReference pushRef = adminRef.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
+                    String id = pushRef.getKey();
+                    Client2 user=new Client2(id,edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
+                    pushRef.setValue(user)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugare emp in baza de date:success");
+
+                            // ...
+                        }
+                    })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Write failed
+                                    // ...
+                                    Log.d(TAG, "adaugare emp in baza de date:Failed");
+                                }
+                            });
+                    // String pushId = pushRef.getKey();
+                    // mRestaurant.setPushId(pushId);
+                    // pushRef.setValue(mRestaurant);
+
+                    // ITEM_LIST.add(ITEM_LIST.size(),GetItem);
+                    listaClienti.add(listaClienti.size(),user);
+                    edittext2.setText("");
+                    edittext1.setText("");
+                    if(dif!=0) {
+                        textViewNumarAngajati.setText("Introduceti " + dif + " angajati pentru a contiua");
+                    }
+                    else {
+                        textViewNumarAngajati.setText("Puteti continua");
+                    }
 
 
-                arrayadapter.notifyDataSetChanged();
+                    arrayadapter.notifyDataSetChanged();
 
-                Toast.makeText(getApplicationContext(), "Item Added SuccessFully", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Item Added SuccessFully", Toast.LENGTH_LONG).show();
 
 
-            }}
+                }}
         });
         btnFinish.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                 dif=numberOfEmp-counter;
+                dif=numberOfEmp-counter;
                 if(counter!=numberOfEmp)
                 {
 
@@ -150,29 +214,12 @@ public class AddEmployees extends Activity {
                 else
                 {
                     System.out.println("Numar de clienti:"+counter);
+                    //addEmp();
                     //trimitem data catre server;
                     //adaugam clienti in baza de date
                     //treubie facuta verificarea datelor
-                    /*Iterator<Client> i = listaClienti.iterator();
-                    while (i.hasNext()) {
-                        System.out.println( i);
-                        String nume=i.next().getNume();
-                        String prenume=i.next().getPrenume();
-                        String pozitie=i.next().getPozitie();
-                        addUser(nume,prenume,pozitie);
-
-                    }*/
-                   //startActivity(new Intent(getApplicationContext(),Succes.class));
-
                     startActivity(new Intent(getApplicationContext(),TabelClienti.class));
-                   // addUser();
-                   /* for (Client car : listaClienti) {
-                       System.out.print("For loop:"+car.toString());
-                        String nume=car.getNume();
-                        String prenume=car.getPrenume();
-                        String pozitie=car.getPozitie();
-                        addUser(nume,prenume,pozitie);
-                    }*/
+
 
                 }
 
@@ -181,17 +228,32 @@ public class AddEmployees extends Activity {
         });
     }
 
-    public void addUser()
+    public void addEmp()
     {
-        for (Client client : listaClienti) {
-            String id = databaseClienti.push().getKey();
-            Client user = new Client(id, client.getNume(), client.getPrenume(), client.getPozitie());
-            databaseClienti.child(id).setValue(user)
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user.getUid();
+
+        DatabaseReference adminRef = FirebaseDatabase
+                .getInstance()
+                .getReference("Employees")
+                .child(uid);
+
+        DatabaseReference pushRef = adminRef.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
+
+        // String pushId = pushRef.getKey();
+        // mRestaurant.setPushId(pushId);
+        // pushRef.setValue(mRestaurant);
+
+        for (Client2 client : listaClienti) {
+            String id = pushRef.getKey();
+            Client2 cl = new Client2(id, client.getNume(), client.getPrenume(), client.getPozitie());
+            System.out.println("Emp:"+id+client.getNume()+ client.getPrenume()+ client.getPozitie());
+            pushRef.setValue(cl)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             // Write was successful!
-                            Log.d(TAG, "adaugareInBaza de date:success");
+                            Log.d(TAG, "adaugare emp in baza de date:success");
 
                             // ...
                         }
@@ -201,27 +263,39 @@ public class AddEmployees extends Activity {
                         public void onFailure(@NonNull Exception e) {
                             // Write failed
                             // ...
-                            Log.d(TAG, "adaugareInBaza de date:Failed");
+                            Log.d(TAG, "adaugare emp in baza de date:Failed");
+                        }
+                    });
+        }
+    }
+    public void addUserInBazaDeDate()
+    {
+
+        for (Client2 client : listaClienti) {
+            String id = databaseClienti.push().getKey();
+            Client2 user = new Client2(id, client.getNume(), client.getPrenume(), client.getPozitie());
+            System.out.println("Emp:"+id+client.getNume()+ client.getPrenume()+ client.getPozitie());
+            databaseClienti.child(id).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugare emp in baza de date:success");
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugare emp in baza de date:Failed");
                         }
                     });
         }
 
-            Toast.makeText(this,"Clienti adaugati", Toast.LENGTH_LONG).show();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        Toast.makeText(this,"Clienti adaugati", Toast.LENGTH_LONG).show();
     }
 
 }

@@ -31,8 +31,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.sql.SQLOutput;
 
 public class MainActivity extends Activity implements  View.OnClickListener{
 
@@ -101,9 +104,6 @@ public class MainActivity extends Activity implements  View.OnClickListener{
 
         btnAddEmployees.setOnClickListener(this);
         btnSlider.setOnClickListener(this);
-
-
-
 
 
 
@@ -179,18 +179,13 @@ public  void setVisibleAngajator()
                 //registerUser();
                 break;
             case R.id.buttonRegister2:
-                //inregistrare angajator email.password,company name,nr de angaati,tipul companiei
-                //adaugare clienti view
 
-               // addUser();
-                //registerUser();
-               // startActivity(new Intent(getApplicationContext(),Login.class));
+                //addUser();
+                registerUser();
+
                 //trimitem nr de angajati
 
-                String value=editTextCompanyEmployees.getText().toString();
-                Intent intent = new Intent(getBaseContext(), AddEmployees.class);
-                intent.putExtra("key",value);
-                startActivity(intent);
+
                 break;
             case R.id.btnAddEmp:
                 startActivity(new Intent(getApplicationContext(),AddEmployees.class));
@@ -200,6 +195,7 @@ public  void setVisibleAngajator()
 
         }
     }
+
 
 
 
@@ -278,6 +274,18 @@ public  void setVisibleAngajator()
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(getApplicationContext(), "Registration Succes.",
                                     Toast.LENGTH_SHORT).show();
+                            System.out.println("User id:"+mAuth.getUid());
+                            addUser(mAuth.getUid());
+
+
+
+                           /* String value="";
+                            value+=mAuth.getUid();
+                            value+=" "+editTextCompanyEmployees.getText().toString();
+                            Intent intent = new Intent(getBaseContext(), AddEmployees.class);
+                            //Intent intent = new Intent(getBaseContext(), Login.class);
+                            intent.putExtra("key",value);
+                            startActivity(intent);*/
 
                             //FirebaseUser user = mAuth.getCurrentUser();
                             //updateUI(user);
@@ -322,11 +330,13 @@ public  void setVisibleAngajator()
     }*/
 
 
-    public void addUser()
+
+    public void addUser(String theid)
     {
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
         String companyName=editTextCompanyName.getText().toString();
+      //  System.out.println("USER ID:"+userid);;
 
         String companyField=editTextCompanyField.getText().toString();
         int numberOfEmployees = 0;
@@ -340,14 +350,15 @@ public  void setVisibleAngajator()
         if(!TextUtils.isEmpty(email))
         {
 
-            String id= databaseUsers.push().getKey();
-            User user=new User(id,email,password,companyName,numberOfEmployees,companyField);
-            databaseUsers.child(id).setValue(user)
+            //String id= databaseUsers.push().getKey();
+            User user=new User(theid,email,password,companyName,numberOfEmployees,companyField);
+            databaseUsers.child(theid).setValue(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     // Write was successful!
                     Log.d(TAG, "adaugareInBaza de date:success");
+
 
                     // ...
                 }
@@ -367,6 +378,7 @@ public  void setVisibleAngajator()
         {
             Toast.makeText(this,"Introduceti un nume",Toast.LENGTH_LONG).show();
         }
+        startActivity(new Intent(getApplicationContext(),Login.class));
     }
 
 

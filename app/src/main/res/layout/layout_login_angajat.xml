@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +7,7 @@
 
     <TextView
         android:id="@+id/userCurrent"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -16,7 +15,10 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/holo_green_dark"
+        android:padding="5sp"
         android:text="Welcome, Nume Prenume"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.082"
@@ -61,25 +63,25 @@
         android:paddingLeft="10dp"
         android:text="TextView"
         android:textSize="@dimen/cellText_textSize"
-        app:layout_constraintBottom_toTopOf="@+id/GridLayout2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator"
         app:layout_constraintVertical_bias="0.0" />
 
-    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <GridLayout
         android:id="@+id/GridLayout2"
-        android:layout_width="328dp"
-        android:layout_height="48dp"
+        android:layout_width="65dp"
+        android:layout_height="329dp"
 
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textViewSapt"
-        android:layout_marginBottom="364dp"
+        android:layout_marginBottom="24dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:columnCount="7"
         android:visibility="visible"
@@ -87,124 +89,148 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator">
+        app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
+        app:layout_constraintVertical_bias="0.0">
 
 
         <TextView
             android:id="@+id/textViewMun"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-
+            android:layout_width="60dp"
+            android:layout_height="40dp"
             android:layout_column="0"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="5dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
             android:layout_row="0"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Mun"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewTue"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="1"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:layout_row="0"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_column="0"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_row="1"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Tue"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewWed"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="2"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+
+            android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:layout_row="0"
+            android:layout_marginBottom="5dp"
+            android:layout_row="2"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Wed"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewThu"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="3"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+
+            android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:layout_row="0"
+            android:layout_marginBottom="5dp"
+            android:layout_row="3"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Thu"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewFri"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="4"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+
+            android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:layout_row="0"
+            android:layout_marginBottom="5dp"
+            android:layout_row="4"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Fri"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewSat"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="5"
+            android:layout_width="60dp"
+            android:layout_height="39dp"
+
+            android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:layout_row="0"
+            android:layout_marginBottom="5dp"
+            android:layout_row="5"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Sat"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewSun"
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_column="6"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_row="0"
+            android:layout_row="6"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
             android:text="Sun"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textSize="24sp" />
 
 
     </GridLayout>
 
+    <Button
+        android:id="@+id/btnOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/buttonLogout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
     <GridView
         android:id="@+id/gridViewWeek"
-        android:layout_width="351dp"
-        android:layout_height="350dp"
+        android:layout_width="211dp"
+        android:layout_height="338dp"
 
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
         android:horizontalSpacing="@dimen/elementMargin"
         android:verticalSpacing="@dimen/elementMargin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.36"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GridLayout2" />
+        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintStart_toEndOf="@+id/GridLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

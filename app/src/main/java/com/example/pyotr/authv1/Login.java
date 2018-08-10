@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +38,11 @@ public class Login extends Activity implements View.OnClickListener{
     private Button buttonLogin;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private int numberOfEmp=0;
-    private String userId="";
     DatabaseReference adminRef;
+    DatabaseReference managerRef;
+    DatabaseReference empRef;
+   // private String rol="";
+
 
     private ProgressDialog progressDialog;
 
@@ -49,7 +52,9 @@ public class Login extends Activity implements View.OnClickListener{
         setContentView(R.layout.login);
 
         progressDialog=new ProgressDialog(this);
-      adminRef = FirebaseDatabase.getInstance().getReference("user");
+      adminRef = FirebaseDatabase.getInstance().getReference("users");
+        managerRef = FirebaseDatabase.getInstance().getReference("manager");
+        empRef = FirebaseDatabase.getInstance().getReference("angajati");
 
         buttonLogin=(Button) findViewById(R.id.buttonLogin);
         editTextEmail=(EditText) findViewById(R.id.editTextEmail);
@@ -143,33 +148,70 @@ public class Login extends Activity implements View.OnClickListener{
 
                             finish();
                             //setContentView(R.layout.succes);//daca a reusit login ===>succes
-                            //startActivity(new Intent(getApplicationContext(),Succes.class));
-                            userId=mAuth.getUid();
+                            //startActivity(new Intent(getApplicationContext(),Succes.class))
 
-
-                            adminRef.child(userId).addValueEventListener(new ValueEventListener() {
+                            final String[] rol = {""};
+                            adminRef.child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
+                                    System.out.println("Usr:"+dataSnapshot);
+                                    rol[0] = dataSnapshot.getValue(User.class).getRol();
+                                    System.out.println("User rol:"+ rol[0]);
 
-                                    System.out.println("Emp:"+dataSnapshot);
-                                    numberOfEmp = dataSnapshot.getValue(User.class).getNumberOfEmployes();
-                                    System.out.println("Emp number:"+numberOfEmp);
-                                    Intent intent = new Intent(getBaseContext(), AddEmployees.class);
-                                    intent.putExtra("key",numberOfEmp);
-                                    startActivity(intent);
-                                    //for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                        //Log.e(TAG, "Emp======="+postSnapshot.child("email").getValue());
-                                       // Log.e(TAG, "Emp======="+postSnapshot.child("numberOfEmployes").getValue());
-                                       // System.out.println("Emp number:"+postSnapshot.child("numberOfEmployes").getValue());
-                                    //}
-                                  //// User user= dataSnapshot.getValue(User.class);
-                                    //numberOfEmp=user.getNumberOfEmployes();
-                                    //System.out.println("Emp number:"+numberOfEmp);
+                                    if(rol[0].equals("manager"))
+                                    {
+
+                                        managerRef.child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                System.out.println("Emp:"+dataSnapshot);
+                                               int numberOfEmp = dataSnapshot.getValue(Managar.class).getNumberOfEmployes();
+                                                System.out.println("Emp number:"+numberOfEmp);
+                                                Intent intent = new Intent(getBaseContext(), AddEmployees.class);
+                                                intent.putExtra("key",numberOfEmp);
+                                                startActivity(intent);
+                                            }
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                // Getting Post failed, log a message
+                                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                                                // ...
+                                            }
+
+                                        });
+
+
+                                    }
+                                    else if(rol[0].equals("angajat"))
+                                    {
+                                        startActivity(new Intent(getApplicationContext(),Login_Emp.class));
+                                        //luam manager id din angati tabel si apoi mergem la Employees si aflam angajatul current dupa nume
+                                      /*  empRef.child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                System.out.println("Ang:"+dataSnapshot);
+                                               String  manager = dataSnapshot.getValue(Employee.class).getManager();
+                                                System.out.println("Ang manager:"+manager);
+                                                Intent intent = new Intent(getBaseContext(), Login_Emp.class);
+                                                intent.putExtra("key",manager);
+                                                startActivity(intent);
+
+                                            }
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                // Getting Post failed, log a message
+                                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                                                // ...
+                                            }
+
+
+                                        });*/
+
+                                    }
 
                                 }
-
-
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
                                     // Getting Post failed, log a message
@@ -177,14 +219,12 @@ public class Login extends Activity implements View.OnClickListener{
                                     // ...
                                 }
 
-
                             });
 
-                            //updateUI(user);
+                            System.out.println("Rol in fct:"+ rol[0]);
 
 
-
-                           // startActivity(new Intent(getApplicationContext(),Login_Emp.class));
+                            // startActivity(new Intent(getApplicationContext(),Login_Emp.class));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "loginUserWIthEmail:failure", task.getException());
@@ -208,13 +248,26 @@ public class Login extends Activity implements View.OnClickListener{
     }
 
 
-    private void getNummberOfEmp() {
+    /*public String getRol(String usrID) {
 
+        adminRef.child(usrID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                System.out.println("Usr:"+dataSnapshot);
+                rol = dataSnapshot.getValue(User.class).getRol();
+                System.out.println("User rol:"+rol);
 
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
 
-    }
-
-
+        });
+        return  rol;
+    }*/
 
 
 

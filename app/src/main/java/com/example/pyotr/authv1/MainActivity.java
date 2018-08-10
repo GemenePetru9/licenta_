@@ -49,6 +49,9 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private EditText editTextCompanyName;
     private EditText editTextCompanyEmployees;
     private EditText editTextCompanyField;
+    private EditText editTextEmpNume;
+    private EditText editTextEmpPrenume;
+    private EditText editTextEmpManager;
 
     private TextView textViewLog;
     private TextView textInfo;
@@ -56,12 +59,16 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private RadioButton radioButton1;
     private  RadioButton radioButton2;
     private LinearLayout layout1;
+    private ConstraintLayout angajat;
 
     private Button btnAddEmployees;
     private Button btnSlider;
 
 
+    DatabaseReference databaseManager;
+    DatabaseReference databaseEmp;
     DatabaseReference databaseUsers;
+
 
 
     private ProgressDialog progressDialog;
@@ -73,7 +80,9 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         btnAddEmployees=(Button) findViewById(R.id.btnAddEmp) ;
         btnSlider=(Button) findViewById(R.id.btnSlider);
 
-        databaseUsers= FirebaseDatabase.getInstance().getReference("user");
+        databaseManager= FirebaseDatabase.getInstance().getReference("manager");
+        databaseEmp= FirebaseDatabase.getInstance().getReference("angajati");
+        databaseUsers= FirebaseDatabase.getInstance().getReference("users");
 
 
         progressDialog=new ProgressDialog(this);
@@ -94,6 +103,10 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         editTextCompanyName=(EditText) findViewById(R.id.editTextCompanyName);
         editTextCompanyEmployees=(EditText) findViewById(R.id.editTextCompanyEmployees);
         editTextCompanyField=(EditText) findViewById(R.id.editTextCompanyField);
+        editTextEmpNume=(EditText) findViewById(R.id.editTextEmpNume);
+        editTextEmpPrenume=(EditText) findViewById(R.id.editTextEmpPrenume);
+        editTextEmpManager=(EditText) findViewById(R.id.editTextEmpPass);
+        angajat=(ConstraintLayout) findViewById(R.id.angajat);
 
        mAuth = FirebaseAuth.getInstance();
 
@@ -174,6 +187,9 @@ public  void setVisibleAngajator()
                }
                else if(radioButton2.isChecked())
                {
+                   setVisibleOff();
+                   angajat.setVisibility(View.VISIBLE);
+                   buttonStep2.setVisibility(View.VISIBLE);
                    //angajat
                }
                 //registerUser();
@@ -336,6 +352,9 @@ public  void setVisibleAngajator()
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
         String companyName=editTextCompanyName.getText().toString();
+        String nume=editTextEmpNume.getText().toString();
+        String prenume=editTextEmpPrenume.getText().toString();
+        String manager=editTextEmpManager.getText().toString();
       //  System.out.println("USER ID:"+userid);;
 
         String companyField=editTextCompanyField.getText().toString();
@@ -347,6 +366,108 @@ public  void setVisibleAngajator()
             System.out.println("Could not parse " + nfe);
         }
 
+
+
+        if(radioButton1.isChecked())
+        {
+            User user=new User(theid,email,password,"manager");
+            databaseUsers.child(theid).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugareInBaza de date:success");
+
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugareInBaza de date:Failed");
+                        }
+                    });
+            //angajator
+            Managar managar=new Managar(theid,email,password,companyName,numberOfEmployees,companyField);
+            databaseManager.child(theid).setValue(managar)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Write was successful!
+                        Log.d(TAG, "adaugareInBaza de date:success");
+
+
+                        // ...
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        // ...
+                        Log.d(TAG, "adaugareInBaza de date:Failed");
+                    }
+                });
+
+            Toast.makeText(this,"Manager adaugat", Toast.LENGTH_LONG).show();
+
+
+
+            //layout1.setVisibility(View.VISIBLE);
+
+        }
+        else if(radioButton2.isChecked())
+        {
+            User user=new User(theid,email,password,"angajat");
+            databaseUsers.child(theid).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugareInBaza de date:success");
+
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugareInBaza de date:Failed");
+                        }
+                    });
+
+
+            Employee emp=new Employee(theid,email,password,nume,prenume,manager);
+            databaseEmp.child(theid).setValue(emp)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugareInBaza de date:success");
+
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugareInBaza de date:Failed");
+                        }
+                    });
+            Toast.makeText(this,"User adaugat", Toast.LENGTH_LONG).show();
+            //angajat
+        }
+
+        /*
         if(!TextUtils.isEmpty(email))
         {
 
@@ -377,7 +498,7 @@ public  void setVisibleAngajator()
         else
         {
             Toast.makeText(this,"Introduceti un nume",Toast.LENGTH_LONG).show();
-        }
+        }*/
         startActivity(new Intent(getApplicationContext(),Login.class));
     }
 

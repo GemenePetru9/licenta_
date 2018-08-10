@@ -6,6 +6,67 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/angajat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <EditText
+            android:id="@+id/editTextEmpNume"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="104dp"
+            android:hint="Last Name"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/editTextEmpPrenume"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <EditText
+            android:id="@+id/editTextEmpPrenume"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:hint="First name"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/editTextEmpPass"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextEmpPass"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="248dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="9dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="9dp"
+            android:hint="Password"
+            android:inputType="text"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
@@ -129,6 +190,22 @@
 
 
     <EditText
+        android:id="@+id/editTextCompanyField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="224dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:hint="CompanyField"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
         android:id="@+id/editTextCompanyName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,13 +216,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:hint="Company name"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/editTextCompanyEmployees"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewInfo"
-        app:layout_constraintVertical_bias="1.0"
-        android:visibility="invisible"/>
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/editTextCompanyEmployees"
@@ -157,27 +234,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:hint="Number of employees"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/editTextCompanyField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="invisible"/>
-
-    <EditText
-        android:id="@+id/editTextCompanyField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="224dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:hint="CompanyField"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="invisible"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnAddEmp"

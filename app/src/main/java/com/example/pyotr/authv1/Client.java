@@ -29,11 +29,18 @@ public class Client {
         this.clientId=clientId;
     }
 
+    public Client(String nume, String prenume, String pozitie, String clientId, List<String> day) {
+        this.nume = nume;
+        this.prenume = prenume;
+        this.pozitie = pozitie;
+        this.clientId = clientId;
+        this.day = day;
+    }
 
     /*public Client(Map<String, String> shift_per_day) {
-        this.shift_per_day = shift_per_day;
-    }
-*/
+            this.shift_per_day = shift_per_day;
+        }
+    */
     public Client(String nume, String prenume, String pozitie) {
         this.nume = nume;
         this.prenume = prenume;

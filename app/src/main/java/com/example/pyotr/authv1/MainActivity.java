@@ -391,7 +391,7 @@ public  void setVisibleAngajator()
                         }
                     });
             //angajator
-            Managar managar=new Managar(theid,email,password,companyName,numberOfEmployees,companyField);
+            Managar managar=new Managar(theid,email,password,companyName,numberOfEmployees,companyField,false,false); //avem status false deorece inca nu a adagaut angajati in baza de date
             databaseManager.child(theid).setValue(managar)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

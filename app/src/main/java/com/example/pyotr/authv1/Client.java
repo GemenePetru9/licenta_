@@ -16,6 +16,7 @@ public class Client {
     private String pozitie;
      private String clientId;
      private String shift;
+     private String sapt;
     //private String[] day={"off","off","off","off","off","off","off"};
     private List<String> day=Arrays.asList("off","off","off","off","off","off","off");
     //Map<String,String> shift_per_day;
@@ -29,12 +30,13 @@ public class Client {
         this.clientId=clientId;
     }
 
-    public Client(String nume, String prenume, String pozitie, String clientId, List<String> day) {
+    public Client(String nume, String prenume, String pozitie, String clientId, List<String> day,String sapt) {
         this.nume = nume;
         this.prenume = prenume;
         this.pozitie = pozitie;
         this.clientId = clientId;
         this.day = day;
+        this.sapt=sapt;
     }
 
     /*public Client(Map<String, String> shift_per_day) {
@@ -95,6 +97,15 @@ public class Client {
 
         return shift;
     }
+
+    public String getSapt() {
+        return sapt;
+    }
+
+    public void setSapt(String sapt) {
+        this.sapt = sapt;
+    }
+
     public String getShift() {
         return shift;
     }
@@ -112,8 +123,46 @@ public class Client {
         this.day.set(position,shift);
     }
 
+    public void setDay(Map<String, Object> day) {
 
-    /*public Map<String, String> getShift_per_day() {
+        for (Map.Entry<String, Object> entry : day.entrySet()) {
+
+            System.out.println("entry key : "+entry.getKey());
+            System.out.println("Object value :"+entry.getValue());
+            if(entry.getKey().equals("Monday"))
+            {
+                this.day.set(0,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Tuesday"))
+            {
+                this.day.set(1,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Wednesday"))
+            {
+                this.day.set(2,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Thusday"))
+            {
+                this.day.set(3,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Friday"))
+            {
+                this.day.set(4,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Saturday"))
+            {
+                this.day.set(5,entry.getValue().toString());
+            }
+            else  if(entry.getKey().equals("Sunday"))
+            {
+                this.day.set(6,entry.getValue().toString());
+            }
+
+        }
+    }
+
+
+/*public Map<String, String> getShift_per_day() {
         return shift_per_day;
     }
     public String MapToString()

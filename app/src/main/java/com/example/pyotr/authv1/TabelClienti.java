@@ -1,6 +1,8 @@
 package com.example.pyotr.authv1;
 
 import android.app.Activity;
+import android.app.usage.UsageEvents;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
@@ -22,8 +25,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.ContentValues.TAG;
+
 public class TabelClienti  extends Activity implements AdapterView.OnItemClickListener {
 
     private TextView textViewData;
@@ -41,6 +52,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Spinner spinner2;
     private String ora1;
     private String ora2;
+    private String day1;
+    private String day2;
     private Button btnAddShift;
     private Button btnPublish;
     private Button btnWeek;
@@ -49,10 +62,15 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Button btnDay;
     GridLayout gridLayout2;
    private  GridView gridDay;
-
+   private GridView gridShift;
+   private GridView gridview;
+    private EmployeeAdapter employeeAdapter;
+    private ShiftAdapter shiftAdapter;
+    private DayAdapter weekAdapter;
 
     private static final String TAG = "TabelClientiActivity";
     DatabaseReference databaseClienti;
+    DatabaseReference managerRef;
     FirebaseUser usr;
     private TextView textViewDay;
     private Calendar now;
@@ -70,7 +88,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     ArrayList<String[]> saptamana = new ArrayList<String[]>();
 
     ArrayList<Client> clienti_afisati = new ArrayList<>();
-    ArrayList<Client> mEmpDataSet = new ArrayList<>();
+   private ArrayList<Client> mEmpDataSet = new ArrayList<>();
 
 
     List<HashMap<String, String[]>> aList;
@@ -104,6 +122,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
 
         databaseClienti = FirebaseDatabase.getInstance().getReference();
+        managerRef = FirebaseDatabase.getInstance().getReference("manager");
         textViewDay = findViewById(R.id.textViewSapt);
         constraintLayout = (ConstraintLayout) findViewById(R.id.popuplayout);
         gridLayout = (GridLayout) findViewById(R.id.GridLayout1);
@@ -205,22 +224,29 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         //gridViewOre = (GridView) findViewById(R.id.gridViewOre);
         //ArrayAdapter mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, ore);
         //gridViewOre.setAdapter(mAdapter);
+        gridview = (GridView) findViewById(R.id.gridViewClienti);
+        gridDay = (GridView) findViewById(R.id.gridViewDay);
+        gridShift = (GridView) findViewById(R.id.gridViewShift);
+
+
+
+
 
         //Prepare DataSet
-        mEmpDataSet = prepareDataSet();
+
+        prepareDataSet();
+       //verificam daca admin a adaugat shifturi
         //Initialize Grid View for programming
-        GridView gridview = (GridView) findViewById(R.id.gridViewClienti);
-       gridDay = (GridView) findViewById(R.id.gridViewDay);
-        final GridView gridShift = (GridView) findViewById(R.id.gridViewShift);
+
 
         //Connect DataSet to Adapter
-        EmployeeAdapter employeeAdapter = new EmployeeAdapter(this, mEmpDataSet);
-        final ShiftAdapter shiftAdapter = new ShiftAdapter(this, mEmpDataSet);
+        //EmployeeAdapter employeeAdapter = new EmployeeAdapter(this, mEmpDataSet);
+       // ShiftAdapter shiftAdapter = new ShiftAdapter(this, mEmpDataSet);
 
 
         //Now Connect Adapter To GridView
-        gridview.setAdapter(employeeAdapter);
-        gridShift.setAdapter(shiftAdapter);
+       // gridview.setAdapter(employeeAdapter);
+        //gridShift.setAdapter(shiftAdapter);
 
         //Add Listener For Grid View Item Click
         //gridview.setOnItemClickListener(this);
@@ -329,8 +355,21 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                         }
                     }
 
+                    //trebuie sa adaugam si data saptamanii
+
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
                     databaseReference.setValue(shift_week);
+                    if(day1!=null&&day2!=null)
+                    {
+                        databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("sapt");
+                        String sapt=day1+"-"+day2;
+                        databaseReference.setValue(sapt);
+
+                    }
+                    databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
+                    databaseReference.setValue(true);
+
+
 
 
                 }
@@ -356,6 +395,12 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 // gridDay.setStretchMode();
                 btnWeek.setVisibility(View.INVISIBLE);
                 btnDay.setVisibility(View.VISIBLE);
+                //adaugam zilele adaugate_sapt respectiva
+                try {
+                    showDate();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 //afisare zile current day-day+6
                 //String currentDay=(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
                // String lastDay=(strDays[now.get(Calendar.DAY_OF_WEEK) +5] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
@@ -368,16 +413,16 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             @Override
             public void onClick(View v) {
                 //face shift greeview insizibil
-
+                setShiftAdapter();
                 gridShift.setVisibility(View.VISIBLE);
                 gridLayout.setVisibility(View.VISIBLE);
                 gridLayout2.setVisibility(View.INVISIBLE);
                 gridDay.setVisibility(View.INVISIBLE);
-            //    textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+             textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
 
 
                 //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
-                // gridShift.setAdapter(adapter);
+
                // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
                 //gridDay.setAdapter(dayAdapter);
                 // gridDay.setStretchMode();
@@ -388,6 +433,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             }
         });
     }
+
 
 
 
@@ -500,38 +546,91 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
     }
 
+    public void setEmpAdapter()
+    {
 
-    private ArrayList<Client> prepareDataSet() {
+        if(!mEmpDataSet.isEmpty())
+        {
+             employeeAdapter = new EmployeeAdapter(this, mEmpDataSet);
+            gridview.setAdapter(employeeAdapter);
+        }
+        else
+        {
+            Log.i("Info","mEmpDataSet is empty");
+        }
 
+    }
+    public void setShiftAdapter()
+    {
 
+        if(!mEmpDataSet.isEmpty())
+        {
+            shiftAdapter=new ShiftAdapter(this,mEmpDataSet);
+            gridShift.setAdapter(shiftAdapter);
+        }
+        else
+        {
+            Log.i("Info","mEmpDataSet is empty");
+        }
 
-        databaseClienti.child("Employees").child(usr.getUid()).addValueEventListener(new ValueEventListener() {
+    }
+    public void setWeekAdapter()
+    {
+        if(!mEmpDataSet.isEmpty())
+    {
+        weekAdapter=new DayAdapter(this,mEmpDataSet);
+           gridDay.setAdapter(weekAdapter);
+    }
+    else
+    {
+        Log.i("Info","mEmpDataSet is empty");
+    }
+
+    }
+    public void checkScheduleState()
+    {
+        managerRef.child(usr.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                //trebuie sa verificam status
+                ///daca status is false atunci trebuie sa facem redirect la Intentul de adaugare emp
+                //daca status is true atunci mergem la TabelClienti
 
-                List clienti = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                Boolean check=dataSnapshot.getValue(Managar.class).getSetSchedule();
+                System.out.println("State:"+check);
+                if(check)
+                {
 
+                    now = Calendar.getInstance();
 
+                    gridShift.setVisibility(View.INVISIBLE);
+                    gridLayout.setVisibility(View.INVISIBLE);
+                    gridLayout2.setVisibility(View.VISIBLE);
+                    gridDay.setVisibility(View.VISIBLE);
+
+                    //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
+                    // gridShift.setAdapter(adapter);
+                    setEmpAdapter();
+                    setWeekAdapter();
+                    // gridDay.setStretchMode();
+                    btnWeek.setVisibility(View.INVISIBLE);
+                    btnDay.setVisibility(View.VISIBLE);
+                    //adaugam zilele adaugate_sapt respectiva
                     try {
-                        Client clienInfo = ds.getValue(Client.class);
-                        clienti.add(clienInfo);
-                        clienti_afisati.add(clienInfo);
-                        System.out.println("Client Info:" + clienInfo.toString());
-                        count++;
-
-                    } catch (Exception e) {
-                        System.out.println("NU MERGEEEEEEE" + e);
+                        showDate();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
                 }
+                else
+                {
+                    setEmpAdapter();
+                    setShiftAdapter();
 
 
-                //ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, clienti);
-                // mlistView.setAdapter(adapter);
+                }
             }
-
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
@@ -539,12 +638,53 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 // ...
             }
 
-
         });
 
-        return clienti_afisati;
     }
 
+
+    private void prepareDataSet() {
+        Query queryRef = databaseClienti.child("Employees").child(usr.getUid()).orderByKey();
+        queryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    Log.i("Count ", "" + dataSnapshot.getChildrenCount());
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+
+
+                    for (Object obj : objectMap.values()) {
+                        if (obj instanceof Map) {
+                            Map<String, Object> mapObj = (Map<String, Object>) obj;
+                            Client itemsReceived = new Client();
+                            itemsReceived.setNume((String) mapObj.get("nume"));
+                            itemsReceived.setClientId((String) mapObj.get("clientId"));
+                            itemsReceived.setPrenume((String) mapObj.get("prenume"));
+                            itemsReceived.setPozitie((String) mapObj.get("pozitie"));
+                            itemsReceived.setDay((  Map<String, Object>) mapObj.get("day"));
+
+                            // itemsReceived.setAdded((long) mapObj.get("comment"));
+                            mEmpDataSet.add(itemsReceived);
+                          Log.i(TAG, "Data is:" + itemsReceived.getNume());
+                          Log.i(TAG, "Data is:" + itemsReceived.getClientId());
+                        }
+                    }
+
+
+                    checkScheduleState();
+                      //in felul asta suntem siguri ca mEmpDataSet nu e null
+
+                    //
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     public void setOra() throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
@@ -576,21 +716,53 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         Log.i("======= Hours", " :: " + hours);
         textViewOra.setText(hours + " hours shift");
 
-      /* Button btnAddShift=(Button) findViewById(R.id.btnAddShift);
+    }
 
-        btnAddShift.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //setam intervalul pe itemul selectat
-                constraintLayout.setVisibility(View.INVISIBLE);
+    public void showDate() throws ParseException {
+        String[] strDays = new String[]{
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thusday",
+                "Friday",
+                "Saturday"
+        };
+        String[] strMonths = new String[]{
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        };
+        now = Calendar.getInstance();
+        String dayCur=strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
+
+        String day=now.get(Calendar.DATE)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.YEAR);
+        System.out.println("DAY:"+day);
 
 
-            }
-        });*/
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+        Date myDate = dateFormat.parse(day);
+        Date newDate = new Date(myDate.getTime() + 604800000L); // 6 * 24 * 60 * 60 * 1000
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(myDate);
+        calendar.add(Calendar.DAY_OF_YEAR, +6);
+
+        int indexDay=calendar.get(Calendar.DAY_OF_WEEK);
+        System.out.println("DAY:Index"+indexDay);
+
+        Date nextDate = calendar.getTime();
+        String date = dateFormat.format(newDate);
+
+        String[] part=date.split("-");
+        String dayNext=strDays[indexDay-1];
+        System.out.println("DAY:"+part[0]);
+        day1=dayCur+now.get(Calendar.DATE);
+        day2=dayNext+calendar.get(Calendar.DATE);
+
+        textViewDay.setText(dayCur+now.get(Calendar.DATE)+"-"+dayNext+calendar.get(Calendar.DATE) + ", " + strMonths[now.get(Calendar.MONTH)]  + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
 
 
     }
-
 
 }
 

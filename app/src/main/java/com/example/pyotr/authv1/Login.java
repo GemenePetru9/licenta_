@@ -29,6 +29,8 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.ManagerFactoryParameters;
+
 public class Login extends Activity implements View.OnClickListener{
 
 
@@ -165,12 +167,27 @@ public class Login extends Activity implements View.OnClickListener{
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                                System.out.println("Emp:"+dataSnapshot);
-                                               int numberOfEmp = dataSnapshot.getValue(Managar.class).getNumberOfEmployes();
-                                                System.out.println("Emp number:"+numberOfEmp);
-                                                Intent intent = new Intent(getBaseContext(), AddEmployees.class);
-                                                intent.putExtra("key",numberOfEmp);
-                                                startActivity(intent);
+                                                //trebuie sa verificam status
+                                                ///daca status is false atunci trebuie sa facem redirect la Intentul de adaugare emp
+                                                //daca status is true atunci mergem la TabelClienti
+
+                                                Boolean status=dataSnapshot.getValue(Managar.class).getStatus();
+                                                if(status)
+                                                {
+                                                    //daca shedule is true//atunci
+                                                    startActivity(new Intent(getApplicationContext(),TabelClienti.class));
+
+                                                }
+                                                else {
+
+
+                                                    System.out.println("Emp:" + dataSnapshot);
+                                                    int numberOfEmp = dataSnapshot.getValue(Managar.class).getNumberOfEmployes();
+                                                    System.out.println("Emp number:" + numberOfEmp);
+                                                    Intent intent = new Intent(getBaseContext(), AddEmployees.class);
+                                                    intent.putExtra("key", numberOfEmp);
+                                                    startActivity(intent);
+                                                }
                                             }
                                             @Override
                                             public void onCancelled(DatabaseError databaseError) {

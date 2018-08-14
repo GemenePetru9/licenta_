@@ -78,6 +78,7 @@ public class DayAdapter extends BaseAdapter {
             List<String> date1=mEmployeeData.get(position).getDay();
 
             System.out.println("DayAdapter:"+date1.size());
+            System.out.println("DayAdapter:"+date1.get(0));
 
            holder.sDay1.setText(date1.get(0));
 

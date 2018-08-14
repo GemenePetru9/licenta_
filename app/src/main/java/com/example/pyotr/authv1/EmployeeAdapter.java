@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class EmployeeAdapter extends BaseAdapter {
@@ -18,6 +20,10 @@ public class EmployeeAdapter extends BaseAdapter {
     public EmployeeAdapter(Context context, ArrayList<Client> employeeData) {
         mEmployeeData = employeeData;
         mInflaterCatalogListItems = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public EmployeeAdapter(ValueEventListener valueEventListener, ArrayList<Client> itemsReceivedList) {
+
     }
 
     @Override

@@ -7,4 +7,5 @@
     <dimen name="cellText_padding">5dp</dimen>
     <dimen name="elementMargin">2dp</dimen>
     <dimen name="cellText_textSize">18sp</dimen>
+    <dimen name="DateText_textSize">14sp</dimen>
 </resources>

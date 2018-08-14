@@ -30,12 +30,18 @@ import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
 import java.sql.SQLOutput;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.security.auth.login.LoginException;
 
 import static android.content.ContentValues.TAG;
 
@@ -48,6 +54,7 @@ public class Login_Emp extends Activity  {
     private Calendar now;
     private Button logout;
     private TextView textViewNume;
+    private TextView textViewShift;
    List<String> das=new ArrayList<String>();
     String json="";
     List<String> date=new ArrayList<>();
@@ -90,10 +97,15 @@ public class Login_Emp extends Activity  {
         gridViewWeek=(GridView)findViewById(R.id.gridViewWeek) ;
         textViewDay=(TextView)findViewById(R.id.textViewSapt) ;
         textViewNume=(TextView)findViewById(R.id.userCurrent) ;
+        textViewShift=(TextView) findViewById(R.id.textViewShiftDay) ;
         logout=(Button) findViewById(R.id.btnOut);
-       // showDate();
+        try {
+            showDate();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-       // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
+        // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
        // gridViewWeek.setAdapter(dayAdapter);
 
 
@@ -212,16 +224,16 @@ public class Login_Emp extends Activity  {
                                     try {
                                         jsonObject = new JSONObject(json);
                                         // Getting the value of a attribute in a JSONObject
+                                        das.add(jsonObject.getString("Sunday"));
                                         das.add(jsonObject.getString("Monday"));
                                         das.add(jsonObject.getString("Tuesday"));
                                         das.add(jsonObject.getString("Wednesday"));
                                         das.add(jsonObject.getString("Thusday"));
                                         das.add(jsonObject.getString("Friday"));
                                         das.add(jsonObject.getString("Saturday"));
-                                        das.add(jsonObject.getString("Sunday"));
 
                                         setAdapter();//setam adapter cu orele clientului
-
+                                        showShift();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -248,12 +260,55 @@ public class Login_Emp extends Activity  {
             Log.i("Info login:","date is empty");
         }
     }
-
-    public void showDate()
-    {
+    public void showShift() {
         now = Calendar.getInstance();
-        //textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK)]+"-"+strDays[now.get(Calendar.DAY_OF_WEEK) +5] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+        int index = now.get(Calendar.DAY_OF_WEEK) - 1;
+        String dayCur = strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
+
+        String shiftCurrent = das.get(index);
+        System.out.println("Shift:" + dayCur+"-"+shiftCurrent + "-" + index);
+        String shiftFinal = "";
+        if (shiftCurrent.equals("off")) {
+            textViewShift.setText("Off");
+        } else {
+            String[] part = shiftCurrent.split(" ");
+            textViewShift.setText(part[0] + "-" + part[1]);
+
+
+        }
+    }
+
+    public void showDate() throws ParseException {
+        now = Calendar.getInstance();
+       String dayCur=strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
+
+       String day=now.get(Calendar.DATE)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.YEAR);
+        System.out.println("DAY:"+day);
+
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+        Date myDate = dateFormat.parse(day);
+        Date newDate = new Date(myDate.getTime() + 604800000L); // 6 * 24 * 60 * 60 * 1000
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(myDate);
+        calendar.add(Calendar.DAY_OF_YEAR, +6);
+
+        int indexDay=calendar.get(Calendar.DAY_OF_WEEK);
+        System.out.println("DAY:Index"+indexDay);
+
+        Date nextDate = calendar.getTime();
+        String date = dateFormat.format(newDate);
+
+        String[] part=date.split("-");
+        String dayNext=strDays[indexDay-1];
+        System.out.println("DAY:"+part[0]);
+
+         textViewDay.setText(dayCur+now.get(Calendar.DATE)+"-"+dayNext+calendar.get(Calendar.DATE) + ", " + strMonths[now.get(Calendar.MONTH)]  + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+
 
     }
+
 
 }

@@ -26,8 +26,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -57,6 +60,7 @@ public class AddEmployees extends Activity {
     private int dif=0;
 
     DatabaseReference databaseClienti;
+    DatabaseReference managerRef;
 
 
     int counter=0;
@@ -66,6 +70,8 @@ public class AddEmployees extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addclient);
         databaseClienti= FirebaseDatabase.getInstance().getReference("client");
+
+        managerRef= FirebaseDatabase.getInstance().getReference("manager");
 
         //get number of employyesss
         Bundle extras = getIntent().getExtras();
@@ -210,6 +216,8 @@ public class AddEmployees extends Activity {
                     }
 
 
+
+
                 }
                 else
                 {
@@ -219,6 +227,11 @@ public class AddEmployees extends Activity {
                     //adaugam clienti in baza de date
                     //treubie facuta verificarea datelor
                     startActivity(new Intent(getApplicationContext(),TabelClienti.class));
+                    //setam status to true
+                    FirebaseUser usr= FirebaseAuth.getInstance().getCurrentUser();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("status");
+                    databaseReference.setValue(true);
+                    System.out.println("Set status true");
 
 
                 }

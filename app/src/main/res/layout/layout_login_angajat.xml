@@ -45,10 +45,9 @@
         app:layout_constraintTop_toBottomOf="@+id/userCurrent"
         app:layout_constraintVertical_bias="0.016" />
 
-
     <TextView
         android:id="@+id/textViewSapt"
-        android:layout_width="254dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="8dp"
@@ -59,20 +58,95 @@
         android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/previousDay"
         android:layout_toRightOf="@+id/previousDay"
-        android:background="@android:color/holo_blue_light"
+        android:background="@android:color/holo_green_dark"
         android:paddingLeft="10dp"
         android:text="TextView"
-        android:textSize="@dimen/cellText_textSize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator"
         app:layout_constraintVertical_bias="0.0" />
 
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="189dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorOverlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/textViewShiftDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView2"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:text="TextView"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
+            app:layout_constraintVertical_bias="0.058"
+            tools:ignore="NotSibling" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="29dp"
+            android:layout_marginStart="29dp"
+            android:alpha="0.7"
+            android:text="Your next shift" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="339dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="5sp"
+            android:background="@android:color/holo_green_dark"
+            android:text="Clock In"
+            android:textColor="@android:color/background_light"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="339dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="13dp"
+            android:background="@android:color/background_light"
+            android:text="Start a break"
+            android:textColor="@android:color/holo_green_dark" />
+
+
+    </RelativeLayout>
+
+
     <GridLayout
         android:id="@+id/GridLayout2"
         android:layout_width="65dp"
-        android:layout_height="329dp"
+        android:layout_height="182dp"
 
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -84,13 +158,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:columnCount="7"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.047"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
 
         <TextView
@@ -218,7 +292,7 @@
     <GridView
         android:id="@+id/gridViewWeek"
         android:layout_width="211dp"
-        android:layout_height="338dp"
+        android:layout_height="176dp"
 
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
@@ -227,10 +301,50 @@
         android:layout_marginStart="8dp"
         android:horizontalSpacing="@dimen/elementMargin"
         android:verticalSpacing="@dimen/elementMargin"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/GridLayout2"
         app:layout_constraintTop_toBottomOf="@+id/textViewSapt"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.921" />
+
+    <Button
+        android:id="@+id/button8"
+        android:layout_width="297dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Request Time Off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+        app:layout_constraintVertical_bias="0.612" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Also Working"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.099"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+        app:layout_constraintVertical_bias="0.182" />
+
 </android.support.constraint.ConstraintLayout>

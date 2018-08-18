@@ -6,7 +6,6 @@
     <string name="adaugare_clienti">Adaugare clienti</string>
 
 
-
     <string-array name="types">
         <item>Position A</item>
         <item>Position B</item>
@@ -28,5 +27,24 @@
         <item>19:00</item>
         <item>20:00</item>
     </string-array>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="open_activity">Open Autocomplete Activity</string>
+    <string name="selected_place">Last Selected Place:</string>
+    <string name="place_details">
+    <![CDATA[
+        <b>%1$s</b>
+        <br/>
+        <i>Place Id: %2$s</i>
+        <br/>
+        Address: %3$s
+        <br/>
+        Phone: %4$s
+        <br/>
+        Website: %5$s
+    ]]>
+    </string>
+    <string name="title_activity_maps2">Map</string>
+    <string name="my_schedule">My Schedule  [img src=left.png]</string>
 
 </resources>

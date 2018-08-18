@@ -57,6 +57,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Button btnAddShift;
     private Button btnPublish;
     private Button btnWeek;
+    private Button btnAddMap;
+    private Button btnlogout;
     ConstraintLayout constraintLayout;
     GridLayout gridLayout;
     private Button btnDay;
@@ -142,6 +144,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         btnPublish = (Button) findViewById(R.id.btnPublish);
         btnWeek = (Button) findViewById(R.id.btnWeek);
         btnDay = (Button) findViewById(R.id.btnDay);
+       btnAddMap = (Button) findViewById(R.id.btnAddGeofence);
+        btnlogout= (Button) findViewById(R.id.btnLogOutManager);
 
 
         //  DisplayMetrics dm=new DisplayMetrics();
@@ -430,6 +434,30 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 btnDay.setVisibility(View.INVISIBLE);
 
 
+            }
+        });
+
+        btnAddMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(intent);
+
+               /* FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference usersRef = ref.child("locations");
+                String userId = usersRef.push().getKey();
+                usersRef.child(userId).child("name").setValue("User1");
+                usersRef.child(userId).child("latitudine").setValue(47.64);
+                usersRef.child(userId).child("longitudine").setValue(26.26);*/
+
+            }
+        });
+
+        btnlogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

@@ -498,6 +498,22 @@
         android:textSize="8sp"
         android:visibility="invisible" />
 
+    <Button
+        android:id="@+id/btnAddGeofence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/btnPublish"
+        android:text="Add Geofence" />
+
+    <Button
+        android:id="@+id/btnLogOutManager"
+        android:layout_width="94dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/gridViewClienti"
+        android:text="log out" />
+
 
 </RelativeLayout>
 

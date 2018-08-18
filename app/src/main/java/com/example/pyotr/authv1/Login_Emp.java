@@ -1,6 +1,9 @@
 package com.example.pyotr.authv1;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,8 +14,10 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,13 +54,19 @@ public class Login_Emp extends Activity  {
     ArrayList<Client> mEmpDataSet = new ArrayList<>();
     DatabaseReference databaseEmp;
     DatabaseReference empRef;
-    private GridView gridViewWeek;
+
     private TextView textViewDay;
     private Calendar now;
     private Button logout;
     private TextView textViewNume;
     private TextView textViewShift;
+    private Button clockin;
+    private String numele="";
+    private static Boolean clockState=false;
    List<String> das=new ArrayList<String>();
+    List<String> dateToIntent=new ArrayList<String>();
+
+
     String json="";
     List<String> date=new ArrayList<>();
     String managerId="";
@@ -84,6 +95,7 @@ public class Login_Emp extends Activity  {
         setContentView(R.layout.layout_login_angajat);
         databaseEmp = FirebaseDatabase.getInstance().getReference();
         empRef = FirebaseDatabase.getInstance().getReference("angajati");
+        clockin=(Button)findViewById(R.id.button) ;
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -91,10 +103,35 @@ public class Login_Emp extends Activity  {
 
         }
 
+        Bundle extrasMap = getIntent().getExtras();
+        if (extrasMap != null) {
 
-      //  mEmpDataSet = prepareDataSet();
 
-        gridViewWeek=(GridView)findViewById(R.id.gridViewWeek) ;
+            clockState = extrasMap.getBoolean("keyMap");
+            if (clockState) {
+                //clientul este in zona
+                clockin.setText("Clock out");
+
+
+                int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                int minute  = Calendar.getInstance().get(Calendar.MINUTE);
+
+                System.out.println("Clockin Succes la ora: " + hour+":"+minute);
+                Toast.makeText(getApplicationContext(), "Clock in Succesful", Toast.LENGTH_SHORT).show();
+                //adaugam ora in baza de date si cand da clock out
+            } else {
+                Toast.makeText(getApplicationContext(), "Trebuie sa fiti in zona de lucruc pentru a putea da clock in", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+
+
+
+
+        //  mEmpDataSet = prepareDataSet();
+
+
         textViewDay=(TextView)findViewById(R.id.textViewSapt) ;
         textViewNume=(TextView)findViewById(R.id.userCurrent) ;
         textViewShift=(TextView) findViewById(R.id.textViewShiftDay) ;
@@ -130,25 +167,55 @@ public class Login_Emp extends Activity  {
             finish();
         }
     });
+    clockin.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+
+            //verificam
+            Intent intent = new Intent(getApplicationContext(), MapsActivity2.class);
+            startActivity(intent);
+        }
+    });
+
+
+        ImageView imageButton2= findViewById(R.id.imageViewShift);
+
+        imageButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Toast.makeText(getApplicationContext(),"View shift is clicked",Toast.LENGTH_LONG).show();
+
+               // Intent i = new Intent(Login_Emp.this, Angajat_Shift.class);
+               // startActivity(i);
+
+                Intent intent = new Intent(getApplicationContext(),Angajat_Shift.class);
+                if(!dateToIntent.isEmpty()) {
+                    if(numele!=null)
+                    {
+                        intent.putExtra("nume",numele);
+                    }
+
+                    intent.putExtra("Sunday", dateToIntent.get(0));
+                    intent.putExtra("Monday", dateToIntent.get(1));
+                    intent.putExtra("Tuesday", dateToIntent.get(2));
+                    intent.putExtra("Wednesday", dateToIntent.get(3));
+                    intent.putExtra("Thusday", dateToIntent.get(4));
+                    intent.putExtra("Friday", dateToIntent.get(5));
+                    intent.putExtra("Saturday", dateToIntent.get(6));
+                    System.out.println("Date to intent:"+dateToIntent.get(6));
+                }
+                Bundle bndlAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.slideinleft, R.anim.slideinright).toBundle();
+
+                startActivity(intent, bndlAnimation);
+            }
+        });
 
 
     }
-    public void setAdapter()
-    {
-        if(!das.isEmpty()) {
-        final ArrayAdapter<String> gridViewArrayAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_list_item_1, das);
-        gridViewWeek.setAdapter(gridViewArrayAdapter);
 
-            String[] ore = new String[das.size()];
-            ore = das.toArray(ore);
-             //gridViewWeek.setAdapter(new AdapterOre(this,ore));
-    }else
-    {
-        Log.i("Info","Das is empty");
-    }
-
-    }
 
 
 
@@ -231,8 +298,9 @@ public class Login_Emp extends Activity  {
                                         das.add(jsonObject.getString("Thusday"));
                                         das.add(jsonObject.getString("Friday"));
                                         das.add(jsonObject.getString("Saturday"));
+                                        String name=(String) mapObj.get("nume") + " " + (String) mapObj.get("prenume");
 
-                                        setAdapter();//setam adapter cu orele clientului
+                                        setAdapter(das,name);//setam adapter cu orele clientului
                                         showShift();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -260,6 +328,14 @@ public class Login_Emp extends Activity  {
             Log.i("Info login:","date is empty");
         }
     }
+
+    private void setAdapter(List<String> das, String name) {
+        dateToIntent=new ArrayList<String>(das);
+        numele=name;
+
+
+    }
+
     public void showShift() {
         now = Calendar.getInstance();
         int index = now.get(Calendar.DAY_OF_WEEK) - 1;
@@ -309,6 +385,19 @@ public class Login_Emp extends Activity  {
 
 
     }
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+
+    // Create a Intent send by the notification
+   public static Intent makeNotificationIntent(Context context, String msg) {
+
+        clockState=true;
+        //am primit notification
+        Intent intent = new Intent( context, Login_Emp.class );
+        intent.putExtra( NOTIFICATION_MSG, msg );
+        return intent;
+    }
+
+
 
 
 }

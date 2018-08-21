@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" >
+        <item android:id="@+id/newSchedule" android:title="New Schedule" app:showAsAction="never" />
+        <item android:id="@+id/editSchedule" android:title="Edit Schedule" app:showAsAction="never" />
+        <item android:id="@+id/addEmployer" android:title="Add Employeer" app:showAsAction="never" />
+    <item android:id="@+id/showToken" android:title="Show Token" app:showAsAction="never" />
+    </menu>

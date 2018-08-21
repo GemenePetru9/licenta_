@@ -34,6 +34,9 @@ import javax.net.ssl.ManagerFactoryParameters;
 public class Login extends Activity implements View.OnClickListener{
 
 
+    private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
+
+
     private static final String TAG ="MyActivity" ;
     private FirebaseAuth mAuth;
     private  FirebaseAuth.AuthStateListener mAuthListener;

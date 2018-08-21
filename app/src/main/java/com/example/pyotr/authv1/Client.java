@@ -18,7 +18,21 @@ public class Client {
      private String shift;
      private String sapt;
     //private String[] day={"off","off","off","off","off","off","off"};
-    private List<String> day=Arrays.asList("off","off","off","off","off","off","off");
+    private Map<String,String> day=createMap();
+
+    private Map<String,String> createMap() {
+
+            Map<String,String> myMap = new HashMap<String,String>();
+            myMap.put("Sunday", "off");
+            myMap.put("Monday", "off");
+            myMap.put("Tuesday", "off");
+            myMap.put("Wednesday", "off");
+            myMap.put("Thusday", "off");
+            myMap.put("Friday", "off");
+            myMap.put("Saturday", "off");
+            return myMap;
+    }
+
     //Map<String,String> shift_per_day;
     public Client() {
     }
@@ -30,25 +44,11 @@ public class Client {
         this.clientId=clientId;
     }
 
-    public Client(String nume, String prenume, String pozitie, String clientId, List<String> day,String sapt) {
-        this.nume = nume;
-        this.prenume = prenume;
-        this.pozitie = pozitie;
-        this.clientId = clientId;
-        this.day = day;
-        this.sapt=sapt;
-    }
-
     /*public Client(Map<String, String> shift_per_day) {
             this.shift_per_day = shift_per_day;
         }
     */
-    public Client(String nume, String prenume, String pozitie) {
-        this.nume = nume;
-        this.prenume = prenume;
-        this.pozitie = pozitie;
 
-    }
 
     public String getClientId() {
         return clientId;
@@ -89,10 +89,11 @@ public class Client {
     public String toStringShift() {
         String shift="";
         shift= nume+" "+prenume+" "+pozitie+" ";
-        List<String> ore=new ArrayList<String>(day);
-        for(int i=0;i<ore.size();i++)
-        {
-            shift+= ore.get(i) +" ";
+        for (Map.Entry<String, String> entry : day.entrySet()) {
+
+            System.out.println("entry key : " + entry.getKey());
+            System.out.println("Object value :" + entry.getValue());
+            shift+=entry.getKey()+"-"+entry.getValue();
         }
 
         return shift;
@@ -102,8 +103,16 @@ public class Client {
         return sapt;
     }
 
+    public void setDay(Map<String, String> day) {
+        this.day = day;
+    }
+
     public void setSapt(String sapt) {
         this.sapt = sapt;
+    }
+    public void resetSapt() {
+
+        this.day =createMap();
     }
 
     public String getShift() {
@@ -113,17 +122,16 @@ public class Client {
         this.shift = shift;
     }
 
-
-
-    public List<String> getDay() {
-        return new ArrayList<String>(day);
-    }
-    public void setDay(int position,String shift) {
-
-        this.day.set(position,shift);
+    public Map<String, String> getDay() {
+        return day;
     }
 
-    public void setDay(Map<String, Object> day) {
+    public void setDay(String  key, String shift) {
+
+        this.day.put(key,shift);
+    }
+
+   /* public void setDay(Map<String, Object> day) {
 
         for (Map.Entry<String, Object> entry : day.entrySet()) {
 
@@ -158,7 +166,7 @@ public class Client {
                 this.day.set(6,entry.getValue().toString());
             }
 
-        }
+        }*/
     }
 
 
@@ -188,4 +196,3 @@ public class Client {
 
         shift_per_day.put(day, shift);
     }*/
-}

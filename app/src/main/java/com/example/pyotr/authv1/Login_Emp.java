@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -94,6 +95,8 @@ public class Login_Emp extends Activity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_login_angajat);
         databaseEmp = FirebaseDatabase.getInstance().getReference();
+
+
         empRef = FirebaseDatabase.getInstance().getReference("angajati");
         clockin=(Button)findViewById(R.id.button) ;
 
@@ -219,6 +222,10 @@ public class Login_Emp extends Activity  {
 
 
 
+    public void subscribe(String managerID)
+    {
+        FirebaseMessaging.getInstance().subscribeToTopic(managerID);
+    }
 
     public void getNume() {
         FirebaseUser userCurrent = FirebaseAuth.getInstance().getCurrentUser();
@@ -236,6 +243,7 @@ public class Login_Emp extends Activity  {
                 manger=( dataSnapshot.getValue(Employee.class).getManager());
 
                 getData(nume,manger);
+                subscribe(manger);
 
             }
 

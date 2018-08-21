@@ -1,91 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:orientation="horizontal">
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+
+
+    android:columnCount="3"
+    android:orientation="horizontal"
+    android:rowCount="1"
+    >
+
 
     <TextView
-        android:id="@+id/data1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:id="@+id/textViewNumeAngajat"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+
+        android:layout_columnSpan="1"
         android:layout_margin="3dp"
-        android:layout_weight="1"
+        android:layout_row="0"
         android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
+        android:padding="@dimen/cellText_padding"
+        android:text="Gemene"
         android:textColor="@color/textColor"
-        android:textSize="12sp" />
+        android:textSize="@dimen/cellText_textSize" />
 
     <TextView
-        android:id="@+id/data2"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:id="@+id/textViewShiftAngajat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnSpan="2"
         android:layout_margin="3dp"
-        android:layout_weight="1"
+        android:layout_row="0"
         android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
+        android:padding="@dimen/cellText_padding"
+        android:text="08:00 - 10:00"
         android:textColor="@color/textColor"
-        android:textSize="12sp" />
+        android:textSize="@dimen/cellText_textSize" />
 
-    <TextView
-        android:id="@+id/data3"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
-        android:textColor="@color/textColor"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/data4"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
-        android:textColor="@color/textColor"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/data5"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
-        android:textColor="@color/textColor"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/data6"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
-        android:textColor="@color/textColor"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/data7"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_margin="3dp"
-        android:layout_weight="1"
-        android:background="@color/overlay"
-        android:gravity="center"
-        android:text="Off"
-        android:textColor="@color/textColor"
-        android:textSize="12sp" />
-
-</LinearLayout>
+</GridLayout>

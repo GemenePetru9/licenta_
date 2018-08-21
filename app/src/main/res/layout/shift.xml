@@ -302,7 +302,7 @@
 
     <GridView
         android:id="@+id/gridViewClienti"
-        android:layout_width="77dp"
+        android:layout_width="90dp"
         android:layout_height="442dp"
 
 
@@ -311,43 +311,37 @@
         android:layout_below="@+id/GridLayout1"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="2dp"
         android:gravity="center"
         android:horizontalSpacing="@dimen/elementMargin"
         android:numColumns="1"
-        android:verticalSpacing="@dimen/elementMargin" />
+        android:verticalSpacing="@dimen/elementMargin"
+        android:visibility="visible" />
 
     <GridView
-    android:id="@+id/gridViewShift"
-    android:layout_width="291dp"
-    android:layout_height="350dp"
-    android:layout_below="@+id/GridLayout1"
-    android:layout_marginLeft="8dp"
-    android:layout_marginTop="2dp"
-    android:layout_toEndOf="@+id/gridViewClienti"
-    android:layout_toRightOf="@+id/gridViewClienti"
-    android:horizontalSpacing="@dimen/elementMargin"
-    android:verticalSpacing="@dimen/elementMargin"
-
-
-    >
-
-
-</GridView>
-
-    <GridView
-        android:id="@+id/gridViewDay"
-        android:layout_width="wrap_content"
+        android:id="@+id/gridViewShift"
+        android:layout_width="279dp"
         android:layout_height="350dp"
         android:layout_below="@+id/GridLayout1"
 
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="2dp"
+
+        android:layout_marginLeft="5dp"
         android:layout_toEndOf="@+id/gridViewClienti"
-        android:layout_toRightOf="@+id/gridViewClienti"
+        android:horizontalSpacing="@dimen/elementMargin"
+        android:verticalSpacing="@dimen/elementMargin">
+
+
+    </GridView>
+
+    <GridView
+        android:id="@+id/gridViewDay"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_alignParentStart="true"
+
+        android:layout_below="@+id/GridLayout1"
+
         android:horizontalSpacing="@dimen/elementMargin"
         android:verticalSpacing="@dimen/elementMargin"
-
         android:visibility="invisible" />
 
 
@@ -475,7 +469,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:text="Button" />
+        android:text="Publish" />
 
     <Button
         android:id="@+id/btnWeek"
@@ -504,7 +498,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toStartOf="@+id/btnPublish"
-        android:text="Add Geofence" />
+        android:text="Add Geofence"
+        android:layout_toLeftOf="@+id/btnPublish" />
 
     <Button
         android:id="@+id/btnLogOutManager"
@@ -512,7 +507,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/gridViewClienti"
-        android:text="log out" />
+        android:text="log out"
+        android:layout_toRightOf="@+id/gridViewClienti" />
+
+    <Button
+        android:id="@+id/btnSendNotifcation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btnAddGeofence"
+        android:layout_below="@+id/gridViewShift"
+        android:text="send notification" />
 
 
 </RelativeLayout>

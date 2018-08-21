@@ -6,4 +6,8 @@
     <color name="overlay">#80000000</color>
     <color name="textColor">#ffffff</color>
     <color name="colorOverlay">#ded9d9</color>
+
+    <color name="colorPrimaryNotfication">#039be5</color>
+    <color name="colorPrimaryDarkNotification">#0288d1</color>
+    <color name="colorAccentNotification">#fb8c00</color>
 </resources>

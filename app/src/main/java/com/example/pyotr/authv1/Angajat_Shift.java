@@ -33,13 +33,6 @@ public class Angajat_Shift extends Activity {
 
            textViewNume.setText(extras.getString("nume")+", this week shift");
            System.out.println("Date from intent:"+extras.getString("nume"));
-           String Monday=extras.getString("Monday");
-           String Tuesday=extras.getString("Tuesday");
-           String Wednesday=extras.getString("Wednesday");
-           String Thusday=extras.getString("Thusday");
-           String Friday=extras.getString("Friday");
-           String Saturday=extras.getString("Saturday");
-           String Sunday=extras.getString("Sunday");
            das.add(extras.getString("Monday"));
           /// das.set(0,Monday);
            das.add(extras.getString("Tuesday"));
@@ -48,7 +41,7 @@ public class Angajat_Shift extends Activity {
            das.add(extras.getString("Friday"));
            das.add(extras.getString("Saturday"));
            das.add(extras.getString("Sunday"));
-           System.out.println("Date from intent:"+Monday);
+           System.out.println("Date from intent:"+(extras.getString("Monday")));
 
 
         }

@@ -3,7 +3,7 @@
     <string name="buttonLogout">Log out</string>
     <string name="textViewUser"></string>
     <string name="textViewInfo">Please enter this basic information to help us set up your account</string>
-    <string name="adaugare_clienti">Adaugare clienti</string>
+    <string name="adaugare_clienti">Adaugare angajati...</string>
 
 
     <string-array name="types">
@@ -46,5 +46,12 @@
     </string>
     <string name="title_activity_maps2">Map</string>
     <string name="my_schedule">My Schedule  [img src=left.png]</string>
+
+
+    <string name="notification_channel_id">default</string>
+    <string name="result">Something will happen here&#8230;</string>
+    <string name="subscribed">Subscribed to news topic</string>
+    <string name="unsubscribed">Unsubscribed from news topic</string>
+    <string name="numar_angajati_complet">Puteti continua</string>
 
 </resources>

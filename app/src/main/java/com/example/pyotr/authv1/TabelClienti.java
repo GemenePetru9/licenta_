@@ -1,13 +1,23 @@
 package com.example.pyotr.authv1;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.usage.UsageEvents;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.nfc.Tag;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,27 +38,49 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import static android.content.ContentValues.TAG;
 
-public class TabelClienti  extends Activity implements AdapterView.OnItemClickListener {
-
+public class TabelClienti  extends Activity implements AdapterView.OnItemClickListener{
+    private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
     private TextView textViewData;
     private TextView textViewOra;
+    private TextView textViewMun;
+    private TextView textViewTue;
+    private TextView textViewWed;
+    private TextView textViewThu;
+    private TextView textViewFri;
+    private TextView textViewSat;
+    private TextView textViewSun;
+    private Boolean saptamana1=false;
+    private Boolean saptamana2=false;
+
     private Spinner spinner1;
     private Spinner spinner2;
     private String ora1;
@@ -57,6 +90,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Button btnAddShift;
     private Button btnPublish;
     private Button btnWeek;
+
     private Button btnAddMap;
     private Button btnlogout;
     ConstraintLayout constraintLayout;
@@ -69,15 +103,21 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private EmployeeAdapter employeeAdapter;
     private ShiftAdapter shiftAdapter;
     private DayAdapter weekAdapter;
+    private ShiftDayAdapter shiftDayAdapter;
+    private Boolean firstSchedule=false;
 
     private static final String TAG = "TabelClientiActivity";
     DatabaseReference databaseClienti;
     DatabaseReference managerRef;
+    DatabaseReference databaseReference;
     FirebaseUser usr;
     private TextView textViewDay;
     private Calendar now;
     private ImageView nextDay;
     private ImageView previousDay;
+    private String[] strDays;
+    private String[] strMonths;
+    private String scheduleState="";
     int count = 0;
     int countDays=0;
     // private static Map<Integer, String[]> saptamanal;
@@ -96,7 +136,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     List<HashMap<String, String[]>> aList;
     String[] from = {"Mon"};
     // String[] from = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
-    int[] to = {R.id.data1, R.id.data2, R.id.data3, R.id.data4, R.id.data4, R.id.data5, R.id.data6, R.id.data7};
+    //int[] to = {R.id.data1, R.id.data2, R.id.data3, R.id.data4, R.id.data4, R.id.data5, R.id.data6, R.id.data7};
 
 
     @Override
@@ -104,7 +144,24 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shift);
+
+
+
+
         usr=FirebaseAuth.getInstance().getCurrentUser();
+
+
+        if (android.os.Build.VERSION.SDK_INT > 9)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);/////   android.os.NetworkOnMainThreadException
+           //at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(
+        }
+
+
+
+
+
         // saptamanal=new HashMap<Integer, String[]>();
 
 
@@ -126,17 +183,19 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         databaseClienti = FirebaseDatabase.getInstance().getReference();
         managerRef = FirebaseDatabase.getInstance().getReference("manager");
         textViewDay = findViewById(R.id.textViewSapt);
+        textViewMun=(TextView) findViewById(R.id.textViewMun);
+        textViewTue=(TextView) findViewById(R.id. textViewTue);
+        textViewWed=(TextView) findViewById(R.id.textViewWed);
+        textViewThu =(TextView) findViewById(R.id.textViewThu);
+        textViewFri=(TextView) findViewById(R.id.textViewFri);
+        textViewSat=(TextView) findViewById(R.id.textViewSat);
+        textViewSun=(TextView) findViewById(R.id.textViewSun);
         constraintLayout = (ConstraintLayout) findViewById(R.id.popuplayout);
         gridLayout = (GridLayout) findViewById(R.id.GridLayout1);
         gridLayout2 = (GridLayout) findViewById(R.id.GridLayout2);
         btnAddShift = (Button) findViewById(R.id.btnAddShift);
         nextDay = (ImageView) findViewById(R.id.nextDay);
         previousDay = (ImageView) findViewById(R.id.previousDay);
-
-
-        //calendar
-        //from ore class
-
         textViewData = (TextView) findViewById(R.id.textViewData);
         textViewOra = (TextView) findViewById(R.id.textViewDifOre);
         spinner1 = (Spinner) findViewById(R.id.spinner);
@@ -146,18 +205,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         btnDay = (Button) findViewById(R.id.btnDay);
        btnAddMap = (Button) findViewById(R.id.btnAddGeofence);
         btnlogout= (Button) findViewById(R.id.btnLogOutManager);
+        Button btnsendNot=(Button)findViewById(R.id.btnSendNotifcation) ;
 
-
-        //  DisplayMetrics dm=new DisplayMetrics();
-
-        //  getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        // int width=dm.widthPixels;
-        // int height=dm.heightPixels;
-////
-        // ConstraintLayout.LayoutParams layoutParams = new Constraints.LayoutParams((int)(width*.6),(int)(height*.4));
-
-        // constraintLayout.setLayoutParams(layoutParams);//setam dimensiunea
 
         now = Calendar.getInstance();
 
@@ -168,7 +217,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 + now.get(Calendar.YEAR));
 
         //create an array of days
-        final String[] strDays = new String[]{
+        strDays = new String[]{
                 "Sunday",
                 "Monday",
                 "Tuesday",
@@ -177,7 +226,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 "Friday",
                 "Saturday"
         };
-        final String[] strMonths = new String[]{
+      strMonths = new String[]{
                 "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
         };
         //zi+luna +day of week+year
@@ -233,12 +282,28 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         gridShift = (GridView) findViewById(R.id.gridViewShift);
 
 
+      /*  Bundle e = getIntent().getExtras();
+        if (e != null) {
 
+
+            scheduleState = e.getString("keySchedule");
+            System.out.println("Schedule State Bundle:" + scheduleState);
+
+        }
+        else
+        {
+            System.out.println("Schedule State Bundle este null");
+        }*/
 
 
         //Prepare DataSet
+        //first();
 
-        prepareDataSet();
+       // checkScheduleNew();
+
+       prepareDataSet();
+
+
        //verificam daca admin a adaugat shifturi
         //Initialize Grid View for programming
 
@@ -257,6 +322,70 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         gridShift.setOnItemClickListener(this);
 
 
+        btnsendNot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+            }
+        });
+        textViewMun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Monday");
+
+            }
+        });
+        textViewTue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Tuesday");
+
+            }
+        });
+        textViewWed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Wednesday");
+
+            }
+        });
+        textViewThu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Thusday");
+
+            }
+        });
+        textViewFri.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Friday");
+
+            }
+        });
+        textViewSat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Saturday");
+
+            }
+        });
+        textViewSun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setDayShiftAdapter("Sun");
+
+            }
+        });
+
+
         previousDay.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -273,6 +402,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                     String formattedDate = df.format(now.getTime());
                     Log.v("PREVIOUS DATE : ", formattedDate);
                     textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+                    textViewData.setText(strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE));
                     //dayChanged=true;
                     //reset gridviewShift;
                     //  for(int i=0;i<day.length;i++)
@@ -309,6 +439,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
                     Log.v("NEXT DATE : ", formattedDate);
                     textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+                    textViewData.setText(strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE));
 
 
                     gridShift.setAdapter(shiftAdapter);
@@ -322,63 +453,110 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              //asociere client cu shift
+                //asociere client cu shift
 
-                Map<String, Object> shift_week = new HashMap<>();
-                for(int i=0;i<mEmpDataSet.size();i++) {
-                    Client clientInfo = new Client();
-                    clientInfo = mEmpDataSet.get(i);
-                    System.out.println("Clienti after setting shift:" + clientInfo.toStringShift());
-                    List<String> day = clientInfo.getDay();
-                    for (int j = 0; j < day.size(); j++) {
 
-                        switch (j) {
-                            case 0:
-                                shift_week.put("Monday", day.get(j));
-                                break;
-                            case 1:
-                                shift_week.put("Tuesday", day.get(j));
-                                break;
-                            case 2:
-                                shift_week.put("Wednesday", day.get(j));
-                                break;
-                            case 3:
-                                shift_week.put("Thusday", day.get(j));
-                                break;
-                            case 4:
-                                shift_week.put("Friday", day.get(j));
 
-                                break;
-                            case 5:
-                                shift_week.put("Saturday", day.get(j));
+                    Map<String, String> shift_week = new HashMap<>();
+                    for (int i = 0; i < mEmpDataSet.size(); i++) {
+                        Client clientInfo = new Client();
+                        clientInfo = mEmpDataSet.get(i);
+                        shift_week=mEmpDataSet.get(i).getDay();
+                        System.out.println("Clienti after setting shift:" + clientInfo.toStringShift());
+                        System.out.println("Clienti after setting shift:" + mEmpDataSet.get(i).getDay());
+                      /*  Map<String,String> day = clientInfo.getDay();
+                        for (int j = 0; j < day.size(); j++) {
 
-                                break;
-                            case 6:
-                                shift_week.put("Sunday", day.get(j));
-                                break;
+                            switch (j) {
+                                case 0:
+                                    shift_week.put("Monday", day.get(j));
+                                    break;
+                                case 1:
+                                    shift_week.put("Tuesday", day.get(j));
+                                    break;
+                                case 2:
+                                    shift_week.put("Wednesday", day.get(j));
+                                    break;
+                                case 3:
+                                    shift_week.put("Thusday", day.get(j));
+                                    break;
+                                case 4:
+                                    shift_week.put("Friday", day.get(j));
+
+                                    break;
+                                case 5:
+                                    shift_week.put("Saturday", day.get(j));
+
+                                    break;
+                                case 6:
+                                    shift_week.put("Sunday", day.get(j));
+                                    break;
+                            }
+                        } //trebuie sa adaugam si data saptamanii*/
+
+                        String sapt = day1 + "-" + day2;
+
+                       // pushNotification("topic",usr.getUid());
+
+                        //adaugam pentru prima sapt
+                        if(firstSchedule)
+                        {
+                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+                            databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
+                            databaseReference.setValue(mEmpDataSet.get(i).getDay());
+                            if (day1 != null && day2 != null) {
+                                databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("sapt");
+
+                                databaseReference.setValue(sapt);
+
+                            }
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
+                            databaseReference.setValue(true);
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("sapt1");
+                            databaseReference.setValue(sapt);
+
                         }
+                       /* if (saptamana1) {
+                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+                            databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
+                            databaseReference.setValue(mEmpDataSet.get(i).getDay());
+                            if (day1 != null && day2 != null) {
+                                databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("sapt");
+
+                                databaseReference.setValue(sapt);
+
+                            }
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
+                            databaseReference.setValue(true);
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("sapt1");
+                            databaseReference.setValue(sapt);
+                        }
+                        else if(saptamana2)
+                        {
+                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+                            databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day1");
+                            databaseReference.setValue(shift_week);
+                            if (day1 != null && day2 != null) {
+                                databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("sapt1");
+
+                                databaseReference.setValue(sapt);
+
+                            }
+                            //databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
+                           // databaseReference.setValue(true);
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("sapt2");
+                            databaseReference.setValue(sapt);
+                        }*/
+
+
+
+
+
+
                     }
-
-                    //trebuie sa adaugam si data saptamanii
-
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
-                    databaseReference.setValue(shift_week);
-                    if(day1!=null&&day2!=null)
-                    {
-                        databaseReference = FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("sapt");
-                        String sapt=day1+"-"+day2;
-                        databaseReference.setValue(sapt);
-
-                    }
-                    databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
-                    databaseReference.setValue(true);
-
-
-
-
+                    Log.v("Database update", "update");
                 }
-                Log.v("Database update","update");
-            }
+
         });
 
         btnWeek.setOnClickListener(new View.OnClickListener() {
@@ -387,15 +565,16 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 //face shift greeview insizibil
                 now = Calendar.getInstance();
 
-               gridShift.setVisibility(View.INVISIBLE);
+                gridShift.setVisibility(View.INVISIBLE);
+                gridview.setVisibility(View.INVISIBLE);
                 gridLayout.setVisibility(View.INVISIBLE);
                 gridLayout2.setVisibility(View.VISIBLE);
                 gridDay.setVisibility(View.VISIBLE);
 
                 //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
                 // gridShift.setAdapter(adapter);
-                 DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
-                 gridDay.setAdapter(dayAdapter);
+                DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
+                gridDay.setAdapter(dayAdapter);
                 // gridDay.setStretchMode();
                 btnWeek.setVisibility(View.INVISIBLE);
                 btnDay.setVisibility(View.VISIBLE);
@@ -407,7 +586,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 }
                 //afisare zile current day-day+6
                 //String currentDay=(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
-               // String lastDay=(strDays[now.get(Calendar.DAY_OF_WEEK) +5] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+                // String lastDay=(strDays[now.get(Calendar.DAY_OF_WEEK) +5] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
 //                textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1]+"-"+strDays[now.get(Calendar.DAY_OF_WEEK) +5] + " " + strMonths[now.get(Calendar.MONTH)] +  " " + now.get(Calendar.YEAR));
                 //textViewDay.setText(currentDay+"-"+lastDay);
                 //textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1]+"-"+strDays[now.get(Calendar.DAY_OF_WEEK) +5] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
@@ -417,17 +596,19 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             @Override
             public void onClick(View v) {
                 //face shift greeview insizibil
+                setEmpAdapter();
                 setShiftAdapter();
+                gridview.setVisibility(View.VISIBLE);
                 gridShift.setVisibility(View.VISIBLE);
                 gridLayout.setVisibility(View.VISIBLE);
                 gridLayout2.setVisibility(View.INVISIBLE);
                 gridDay.setVisibility(View.INVISIBLE);
-             textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+                textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
 
 
                 //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
 
-               // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
+                // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
                 //gridDay.setAdapter(dayAdapter);
                 // gridDay.setStretchMode();
                 btnWeek.setVisibility(View.VISIBLE);
@@ -460,11 +641,27 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 finish();
             }
         });
+
     }
 
+    public void first()
+    {
 
 
+        if(!scheduleState.isEmpty()) {
+            if (scheduleState.equals("ok")) {
+                System.out.println("Schedule State:" + scheduleState);
+                prepareDataSetNewSchedule();
 
+            } else {
+                System.out.println("Schedule State:" + scheduleState);
+                prepareDataSet();
+            }
+        }else
+        {
+            System.out.println("Schedule state is null");
+        }
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, final View viewShift, final int position, long l) {
@@ -483,6 +680,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             btnAddShift.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
 
                     RelativeLayout elment = (RelativeLayout) viewShift;
                     int count = elment.getChildCount();
@@ -508,6 +706,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                             //element=((TextView) v);
                             ((TextView) v).setText(ora);
                             ((TextView) v).setBackgroundColor(Color.GREEN);
+
+
                             mEmpDataSet.get(position).setShift(ora);
                             String shiftClient = mEmpDataSet.get(position).getNume() + ":"+mEmpDataSet.get(position).getShift();
                             System.out.println("Adaugare Shit la CLient:" + shiftClient);
@@ -515,45 +715,44 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                            // mEmpDataSet.get(position).setShift(currentDay, ora);//adaugam ziua si shift la clientul current
                             //day[position]=ora;
                            // System.out.println("Adaugare Shit la HASHMAP:" + mEmpDataSet.get(position).MapToString());
-                            int n=0;
                             switch (currentDay) {
                                 case "Monday":
-                                    mEmpDataSet.get(position).setDay(0,ora);
+                                    mEmpDataSet.get(position).setDay("Monday",ora);
                                     break;
 
                                 case "Tuesday":
-                                    mEmpDataSet.get(position).setDay(1,ora);
+                                    mEmpDataSet.get(position).setDay("Tuesday",ora);
                                     break;
                                 case "Wednesday":
-                                    mEmpDataSet.get(position).setDay(2,ora);
+                                    mEmpDataSet.get(position).setDay("Wednesday",ora);
                                     break;
                                 case "Thusday":
-                                    mEmpDataSet.get(position).setDay(3,ora);
+                                    mEmpDataSet.get(position).setDay("Thusday",ora);
                                     break;
 
                                 case "Friday":
-                                    n=5;
-                                    mEmpDataSet.get(position).setDay(4,ora);
+                                    mEmpDataSet.get(position).setDay("Friday",ora);
                                     break;
                                 case "Saturday":
-                                     n=5;
-                                    mEmpDataSet.get(position).setDay(5,ora);
+
+                                    mEmpDataSet.get(position).setDay("Saturday",ora);
                                     break;
                                 case "Sunday":
-                                    n=6;
-                                    mEmpDataSet.get(position).setDay(6,ora);
+
+                                    mEmpDataSet.get(position).setDay("Sunday",ora);
 
 
                                     break;
                             }
-                            List<String> date1=mEmpDataSet.get(position).getDay();
-                            for(int j=0;j<date1.size();j++)
-                            {
-                                System.out.println("DAY : "+j+" "+ date1.get(j));
+                            Map<String,String> date1=mEmpDataSet.get(position).getDay();
+
+                            for (Map.Entry<String, String> entry : date1.entrySet()) {
+
+                                System.out.println("entry key : " + entry.getKey());
+                                System.out.println("Object value :" + entry.getValue());
+
+                                System.out.println("DAY : "+entry.getKey()+" "+ entry.getValue());
                             }
-
-
-
                         }
                     }
                     constraintLayout.setVisibility(View.INVISIBLE);
@@ -574,6 +773,79 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
     }
 
+
+
+    //pentru notificare
+    //crea
+    private void pushNotification(String type,String topic,String notification) {
+        JSONObject jPayload = new JSONObject();
+        JSONObject jNotification = new JSONObject();
+        JSONObject jData = new JSONObject();
+        try {
+            jNotification.put("title", "Schedule Manager");
+            //jNotification.put("body", "Your schedule has been posted!");
+            jNotification.put("body", notification);
+            jNotification.put("sound", "default");
+            jNotification.put("badge", "1");
+            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+            jNotification.put("icon", "ic_notification");
+
+            jData.put("picture", "http://opsbug.com/static/google-io.jpg");
+
+            switch(type) {
+              /*  case "tokens":
+                    JSONArray ja = new JSONArray();
+                    ja.put("c5pBXXsuCN0:APA91bH8nLMt084KpzMrmSWRS2SnKZudyNjtFVxLRG7VFEFk_RgOm-Q5EQr_oOcLbVcCjFH6vIXIyWhST1jdhR8WMatujccY5uy1TE0hkppW_TSnSBiUsH_tRReutEgsmIMmq8fexTmL");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
+                    jPayload.put("registration_ids", ja);
+                    break;*/
+                case "topic":
+                    String topics="/topics/"+topic;
+                    jPayload.put("to", topics);
+                    break;
+                case "condition":
+                    jPayload.put("condition", "'sport' in topics || 'news' in topics");
+                    break;
+                default:
+                    jPayload.put("to", FirebaseInstanceId.getInstance().getToken());
+            }
+
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data", jData);
+
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", AUTH_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            // Send FCM message content.
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(jPayload.toString().getBytes());
+
+            // Read FCM response.
+            InputStream inputStream = conn.getInputStream();
+            final String resp = convertStreamToString(inputStream);
+
+            Handler h = new Handler(Looper.getMainLooper());
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                  //  mTextView.setText(resp);
+                    Log.i(TAG,resp);
+                }
+            });
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String convertStreamToString(InputStream is) {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next().replace(",", ",\n") : "";
+    }
     public void setEmpAdapter()
     {
 
@@ -581,6 +853,21 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         {
              employeeAdapter = new EmployeeAdapter(this, mEmpDataSet);
             gridview.setAdapter(employeeAdapter);
+        }
+        else
+        {
+            Log.i("Info","mEmpDataSet is empty");
+        }
+
+    }
+    public void setDayShiftAdapter(String day)
+    {
+
+        if(!mEmpDataSet.isEmpty())
+        {
+             shiftDayAdapter= new ShiftDayAdapter(this, mEmpDataSet,day);
+             gridDay.setAdapter(shiftDayAdapter);
+
         }
         else
         {
@@ -615,6 +902,141 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     }
 
     }
+    /**
+     * Sets up the options menu.
+     * @param menu The options menu.
+     * @return Boolean.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.manager_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch ( item.getItemId() ) {
+            case R.id.newSchedule: {
+                Toast.makeText(getApplicationContext(),"Add new Schedule",Toast.LENGTH_SHORT).show();
+                addNewSchedule();
+                return true;
+            }
+            case R.id.editSchedule: {
+                Toast.makeText(getApplicationContext(),"Edit this Schedule",Toast.LENGTH_SHORT).show();
+                //editSchedule();
+                return true;
+            }
+            case R.id.addEmployer:
+            {
+                //addEmployer activity
+                return true;
+            }
+            case R.id.showToken:
+            {
+                AlertDialog.Builder builder;
+
+                builder = new AlertDialog.Builder(TabelClienti.this, android.R.style.Theme_Material_Dialog_Alert);
+
+                builder.setTitle("Schedule Manager Employeer Token")
+                        .setMessage("Send this to your employee:"+usr.getUid())
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show();
+
+
+
+                //addEmployer activity
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    public long getLongAsDate(int year, int month, int date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.DAY_OF_MONTH, date);
+        calendar.set(Calendar.MONTH, month - 1);
+        calendar.set(Calendar.YEAR, year);
+        return calendar.getTimeInMillis();
+    }
+    private void addNewSchedule() {
+
+        saptamana2=true;
+        setEmpAdapter();
+        setShiftAdapter();
+        gridview.setVisibility(View.VISIBLE);
+        gridShift.setVisibility(View.VISIBLE);
+        gridLayout.setVisibility(View.VISIBLE);
+        gridLayout2.setVisibility(View.INVISIBLE);
+        gridDay.setVisibility(View.INVISIBLE);
+        btnWeek.setVisibility(View.VISIBLE);
+        btnDay.setVisibility(View.INVISIBLE);
+
+        if(saptamana2)
+        {
+            for(int i=0;i<mEmpDataSet.size();i++) {
+                mEmpDataSet.get(i).resetSapt();
+            }
+        }
+        managerRef.child(usr.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+              //  Boolean check=dataSnapshot.getValue(Managar.class).getSetSchedule();
+                String[] zile=dataSnapshot.getValue(Managar.class).getSapt1().split("-");
+                Integer lastDayScheduele= extractDigits(zile[1]);
+
+                long startTime = getLongAsDate( now.get(Calendar.YEAR), now.get(Calendar.MONTH), lastDayScheduele);
+
+                    now.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), lastDayScheduele+1);
+
+                    textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+
+                    textViewData.setText(strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE));
+                    Integer zicurenta=now.get(Calendar.DATE);
+                    //adaugam zilele adaugate_sapt respectiva
+                    // try {
+                    //  showDate();
+                    // } catch (ParseException e) {
+                    //    e.printStackTrace();
+                    // }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+
+        });
+
+
+
+    }
+
+
+    public Integer extractDigits(String src) {
+        String day=src;
+        if(src!=null) {
+            System.out.println("Dayin extract digits"+day);
+
+            day = day.replaceAll("\\D+", "");
+
+        }
+
+        return Integer.parseInt(day);
+    }
     public void checkScheduleState()
     {
         managerRef.child(usr.getUid()).addValueEventListener(new ValueEventListener() {
@@ -626,11 +1048,13 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 //daca status is true atunci mergem la TabelClienti
 
                 Boolean check=dataSnapshot.getValue(Managar.class).getSetSchedule();
-                System.out.println("State:"+check);
+
                 if(check)
                 {
 
                     now = Calendar.getInstance();
+                    saptamana1=true;
+
 
                     gridShift.setVisibility(View.INVISIBLE);
                     gridLayout.setVisibility(View.INVISIBLE);
@@ -639,20 +1063,52 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
                     //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
                     // gridShift.setAdapter(adapter);
-                    setEmpAdapter();
+                    //setEmpAdapter();
                     setWeekAdapter();
                     // gridDay.setStretchMode();
                     btnWeek.setVisibility(View.INVISIBLE);
                     btnDay.setVisibility(View.VISIBLE);
+                   textViewDay.setText(mEmpDataSet.get(0).getSapt()+", "+strMonths[now.get(Calendar.MONTH)]  + ", " + now.get(Calendar.YEAR));
+
+
+                   Integer zicurenta=now.get(Calendar.DATE);
+
+                    String[] zile=dataSnapshot.getValue(Managar.class).getSapt1().split("-");
+                   // String zile=dataSnapshot.getValue(Managar.class).getSapt1();
+                    System.out.println("Zile"+zile);
+
+                   Integer lastDayScheduele= extractDigits(zile[1]);
+                    System.out.println("Schedule lastDay:"+zicurenta+" -"+lastDayScheduele);
+                   if(zicurenta-lastDayScheduele==1)
+                   {
+                       Toast.makeText(getApplicationContext(),"Mai este o zi si expira orarul",Toast.LENGTH_SHORT).show();
+                       System.out.println("Mai este o zi si expira orarul");
+                       btnDay.setVisibility(View.INVISIBLE);
+                       btnWeek.setVisibility(View.INVISIBLE);
+
+                   }
+                   else if(zicurenta-lastDayScheduele==0)
+                   {
+                       Toast.makeText(getApplicationContext(),"Astazi expira orarul.Ar trebui sa il reinoiti",Toast.LENGTH_SHORT).show();
+                       System.out.println("Astazi expira orarul.Ar trebui sa il reinoiti");
+                       btnDay.setVisibility(View.INVISIBLE);
+                       btnWeek.setVisibility(View.INVISIBLE);
+
+                   }
+
                     //adaugam zilele adaugate_sapt respectiva
-                    try {
-                        showDate();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                   // try {
+                      //  showDate();
+                   // } catch (ParseException e) {
+                    //    e.printStackTrace();
+                   // }
                 }
                 else
                 {
+                    //atunci face primul orar
+                    firstSchedule=true;
+                    FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid());
+
                     setEmpAdapter();
                     setShiftAdapter();
 
@@ -669,6 +1125,44 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
 
     }
+    private void prepareDataSetNewSchedule() {
+        Query queryRef = databaseClienti.child("Employees").child(usr.getUid()).orderByKey();
+        queryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    Log.i("Count ", "" + dataSnapshot.getChildrenCount());
+                    Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                    for (Object obj : objectMap.values()) {
+                        if (obj instanceof Map) {
+                            Map<String, Object> mapObj = (Map<String, Object>) obj;
+                            Client itemsReceived = new Client();
+                            itemsReceived.setNume((String) mapObj.get("nume"));
+                            itemsReceived.setClientId((String) mapObj.get("clientId"));
+                            // itemsReceived.setAdded((long) mapObj.get("comment"));
+                            mEmpDataSet.add(itemsReceived);
+                            Log.i(TAG, "Data is:" + itemsReceived.getNume());
+                            Log.i(TAG, "Data is:" + itemsReceived.getClientId());
+                        }
+                    }
+                    setShiftAdapter();
+                    setEmpAdapter();
+
+
+                    //checkScheduleState();
+                    //in felul asta suntem siguri ca mEmpDataSet nu e null
+
+                    //
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
 
     private void prepareDataSet() {
@@ -677,10 +1171,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-                    Log.i("Count ", "" + dataSnapshot.getChildrenCount());
+                    Log.i("Count angajati ", "" + dataSnapshot.getChildrenCount());
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
-
-
                     for (Object obj : objectMap.values()) {
                         if (obj instanceof Map) {
                             Map<String, Object> mapObj = (Map<String, Object>) obj;
@@ -689,11 +1181,17 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                             itemsReceived.setClientId((String) mapObj.get("clientId"));
                             itemsReceived.setPrenume((String) mapObj.get("prenume"));
                             itemsReceived.setPozitie((String) mapObj.get("pozitie"));
-                            itemsReceived.setDay((  Map<String, Object>) mapObj.get("day"));
+                           // if((  Map<String, Object>) mapObj.get("day").equals(null))
+                            itemsReceived.setDay((  Map<String, String>) mapObj.get("day"));
+
+                                itemsReceived.setSapt((String) mapObj.get("sapt"));
+
+                                // No such key
+
 
                             // itemsReceived.setAdded((long) mapObj.get("comment"));
                             mEmpDataSet.add(itemsReceived);
-                          Log.i(TAG, "Data is:" + itemsReceived.getNume());
+                          Log.i(TAG, "Data is:" + itemsReceived.getNume()+"-"+itemsReceived.getPrenume()+"-"+itemsReceived.getPozitie());
                           Log.i(TAG, "Data is:" + itemsReceived.getClientId());
                         }
                     }
@@ -759,7 +1257,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         String[] strMonths = new String[]{
                 "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
         };
-        now = Calendar.getInstance();
+       // now = Calendar.getInstance();
         String dayCur=strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
 
         String day=now.get(Calendar.DATE)+"-"+(now.get(Calendar.MONTH)+1)+"-"+now.get(Calendar.YEAR);

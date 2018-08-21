@@ -7,12 +7,13 @@ public class Managar extends User {
     private String role;
     private Boolean status;
     private Boolean setSchedule;
+    private String sapt1;
 
     public Managar()
     {
 
     }
-    public Managar(String userID, String email, String password, String companyName, int numberOfEmployes, String companyField, Boolean status,Boolean setSchedule) {
+    public Managar(String userID, String email, String password, String companyName, int numberOfEmployes, String companyField, Boolean status,Boolean setSchedule,String sapt1) {
         super(userID,email, password);
         this.companyName = companyName;
         this.numberOfEmployes = numberOfEmployes;
@@ -20,6 +21,7 @@ public class Managar extends User {
         this.role = role;
         this.status=status;
         this.setSchedule=setSchedule;
+        this.sapt1=sapt1;
     }
 
 
@@ -67,5 +69,13 @@ public class Managar extends User {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public String getSapt1() {
+        return sapt1;
+    }
+
+    public void setSapt1(String sapt1) {
+        this.sapt1 = sapt1;
     }
 }

@@ -48,8 +48,8 @@ public class AddEmployees extends Activity {
     Button btnUser;
     Spinner spinner;
     // List<String> ITEM_LIST;
-    List<Client2> listaClienti;
-    ArrayAdapter<Client2> arrayadapter;
+    List<Client> listaClienti;
+    ArrayAdapter<Client> arrayadapter;
     EditText edittext1;
     EditText edittext2;
     TextView textViewNumarAngajati;
@@ -96,8 +96,6 @@ public class AddEmployees extends Activity {
 
 
         gridview = (GridView)findViewById(R.id.gridView1);
-
-        btnUser=(Button)findViewById(R.id.ShowUser) ;
         button = (Button)findViewById(R.id.button1);
         btnFinish=(Button) findViewById(R.id.button2);
         textViewNumarAngajati=(TextView)findViewById(R.id.textViewNumarEmp) ;
@@ -108,33 +106,10 @@ public class AddEmployees extends Activity {
         spinner=(Spinner) findViewById(R.id.type_spinner);
 
         // ITEM_LIST = new ArrayList<String>();
-        listaClienti=new ArrayList<Client2>();
+        listaClienti=new ArrayList<Client>();
 
-        arrayadapter = new ArrayAdapter<Client2>(getApplicationContext(),android.R.layout.simple_list_item_1,listaClienti );
+        arrayadapter = new ArrayAdapter<Client>(getApplicationContext(),android.R.layout.simple_list_item_1,listaClienti );
 
-
-        btnUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-               FirebaseUser userCurrent = FirebaseAuth.getInstance().getCurrentUser();
-
-               userid=userCurrent.getUid();
-                System.out.println("User current:"+userid);
-
-               /* if (userCurrent != null) {
-                    // User is signed in
-                    String name = userCurrent.getDisplayName();
-                    String email = userCurrent.getEmail();
-                    String uid = userCurrent.getUid();
-                    System.out.println("User current:"+email+" uid:"+uid);
-
-                } else {
-                    // No user is signed in
-                    System.out.println("User current:NU este Logat");
-                }*/
-            }
-        });
         gridview.setAdapter(arrayadapter);
 
         button.setOnClickListener( new View.OnClickListener() {
@@ -156,7 +131,7 @@ public class AddEmployees extends Activity {
                             .child(uid);
                     DatabaseReference pushRef = adminRef.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
                     String id = pushRef.getKey();
-                    Client2 user=new Client2(id,edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
+                    Client user=new Client(id,edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
                     pushRef.setValue(user)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -184,10 +159,17 @@ public class AddEmployees extends Activity {
                     edittext2.setText("");
                     edittext1.setText("");
                     if(dif!=0) {
-                        textViewNumarAngajati.setText("Introduceti " + dif + " angajati pentru a contiua");
+                        if(dif==1)
+                        {
+                            textViewNumarAngajati.setText("Introduceti " + dif + " angajat pentru a contiua");
+                        }
+                        else {
+                            textViewNumarAngajati.setText("Introduceti " + dif + " angajati pentru a contiua");
+                        }
+
                     }
                     else {
-                        textViewNumarAngajati.setText("Puteti continua");
+                        textViewNumarAngajati.setText(R.string.numar_angajati_complet);
                     }
 
 
@@ -226,12 +208,25 @@ public class AddEmployees extends Activity {
                     //trimitem data catre server;
                     //adaugam clienti in baza de date
                     //treubie facuta verificarea datelor
-                    startActivity(new Intent(getApplicationContext(),TabelClienti.class));
+                    //startActivity(new Intent(getApplicationContext(),TabelClienti.class));
                     //setam status to true
                     FirebaseUser usr= FirebaseAuth.getInstance().getCurrentUser();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("status");
                     databaseReference.setValue(true);
                     System.out.println("Set status true");
+
+
+                    Intent intent = new Intent(AddEmployees.this, TabelClienti.class);
+
+                    Integer index=5;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("index", index);
+
+                    intent.putExtras(bundle);
+
+                    startActivity(intent);
+
+
 
 
                 }
@@ -257,9 +252,9 @@ public class AddEmployees extends Activity {
         // mRestaurant.setPushId(pushId);
         // pushRef.setValue(mRestaurant);
 
-        for (Client2 client : listaClienti) {
+        for (Client client : listaClienti) {
             String id = pushRef.getKey();
-            Client2 cl = new Client2(id, client.getNume(), client.getPrenume(), client.getPozitie());
+            Client cl = new Client(id, client.getNume(), client.getPrenume(), client.getPozitie());
             System.out.println("Emp:"+id+client.getNume()+ client.getPrenume()+ client.getPozitie());
             pushRef.setValue(cl)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -284,9 +279,9 @@ public class AddEmployees extends Activity {
     public void addUserInBazaDeDate()
     {
 
-        for (Client2 client : listaClienti) {
+        for (Client client : listaClienti) {
             String id = databaseClienti.push().getKey();
-            Client2 user = new Client2(id, client.getNume(), client.getPrenume(), client.getPozitie());
+            Client user = new Client(id, client.getNume(), client.getPrenume(), client.getPozitie());
             System.out.println("Emp:"+id+client.getNume()+ client.getPrenume()+ client.getPozitie());
             databaseClienti.child(id).setValue(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

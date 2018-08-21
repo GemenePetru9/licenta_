@@ -37,6 +37,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.sql.SQLOutput;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 public class MainActivity extends Activity implements  View.OnClickListener{
 
     private static final String TAG ="MyActivity" ;
@@ -61,8 +63,6 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private LinearLayout layout1;
     private ConstraintLayout angajat;
 
-    private Button btnAddEmployees;
-    private Button btnSlider;
 
 
     DatabaseReference databaseManager;
@@ -77,8 +77,9 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnAddEmployees=(Button) findViewById(R.id.btnAddEmp) ;
-        btnSlider=(Button) findViewById(R.id.btnSlider);
+
+
+
 
         databaseManager= FirebaseDatabase.getInstance().getReference("manager");
         databaseEmp= FirebaseDatabase.getInstance().getReference("angajati");
@@ -115,8 +116,6 @@ public class MainActivity extends Activity implements  View.OnClickListener{
 
         findViewById(R.id.textViewLog).setOnClickListener(this);
 
-        btnAddEmployees.setOnClickListener(this);
-        btnSlider.setOnClickListener(this);
 
 
 
@@ -203,12 +202,6 @@ public  void setVisibleAngajator()
 
 
                 break;
-            case R.id.btnAddEmp:
-                startActivity(new Intent(getApplicationContext(),AddEmployees.class));
-                break;
-
-
-
         }
     }
 
@@ -391,7 +384,7 @@ public  void setVisibleAngajator()
                         }
                     });
             //angajator
-            Managar managar=new Managar(theid,email,password,companyName,numberOfEmployees,companyField,false,false); //avem status false deorece inca nu a adagaut angajati in baza de date
+            Managar managar=new Managar(theid,email,password,companyName,numberOfEmployees,companyField,false,false,""); //avem status false deorece inca nu a adagaut angajati in baza de date
             databaseManager.child(theid).setValue(managar)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

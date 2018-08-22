@@ -267,28 +267,4 @@ public class Login extends Activity implements View.OnClickListener{
         //putem pune email sau parola gresita
     }
 
-
-    /*public String getRol(String usrID) {
-
-        adminRef.child(usrID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("Usr:"+dataSnapshot);
-                rol = dataSnapshot.getValue(User.class).getRol();
-                System.out.println("User rol:"+rol);
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-
-        });
-        return  rol;
-    }*/
-
-
-
 }

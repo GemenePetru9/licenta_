@@ -179,9 +179,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
 
         // create GoogleApiClient
         createGoogleApi();
-        ref = FirebaseDatabase.getInstance().getReference("MyLocation");
-        geoFire = new GeoFire(ref);
-
         //startGeofence();
     }
 

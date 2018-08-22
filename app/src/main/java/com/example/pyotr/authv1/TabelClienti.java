@@ -331,6 +331,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         textViewMun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Monday");
 
@@ -338,7 +340,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewTue.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Tuesday");
 
@@ -346,7 +349,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewWed.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Wednesday");
 
@@ -354,7 +358,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewThu.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Thusday");
 
@@ -362,7 +367,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewFri.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Friday");
 
@@ -370,7 +376,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewSat.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Saturday");
 
@@ -378,7 +385,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         });
         textViewSun.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
 
                 setDayShiftAdapter("Sun");
 
@@ -510,10 +518,11 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                                 databaseReference.setValue(sapt);
 
                             }
-                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
-                            databaseReference.setValue(true);
                             databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("sapt1");
                             databaseReference.setValue(sapt);
+                            databaseReference = FirebaseDatabase.getInstance().getReference("manager").child(usr.getUid()).child("setSchedule");
+                            databaseReference.setValue(true);
+
 
                         }
                        /* if (saptamana1) {
@@ -1072,28 +1081,28 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
 
                    Integer zicurenta=now.get(Calendar.DATE);
+                    String[] zile = dataSnapshot.getValue(Managar.class).getSapt1().split("-");
 
-                    String[] zile=dataSnapshot.getValue(Managar.class).getSapt1().split("-");
-                   // String zile=dataSnapshot.getValue(Managar.class).getSapt1();
-                    System.out.println("Zile"+zile);
+                   if(zile.length!=0) {
+                       //String[] zile = dataSnapshot.getValue(Managar.class).getSapt1().split("-");
+                       // String zile=dataSnapshot.getValue(Managar.class).getSapt1();
+                       System.out.println("Zile" + zile);
 
-                   Integer lastDayScheduele= extractDigits(zile[1]);
-                    System.out.println("Schedule lastDay:"+zicurenta+" -"+lastDayScheduele);
-                   if(zicurenta-lastDayScheduele==1)
-                   {
-                       Toast.makeText(getApplicationContext(),"Mai este o zi si expira orarul",Toast.LENGTH_SHORT).show();
-                       System.out.println("Mai este o zi si expira orarul");
-                       btnDay.setVisibility(View.INVISIBLE);
-                       btnWeek.setVisibility(View.INVISIBLE);
+                       Integer lastDayScheduele = extractDigits(zile[1]);
+                       System.out.println("Schedule lastDay:" + zicurenta + " -" + lastDayScheduele);
+                       if (zicurenta - lastDayScheduele == 1) {
+                           Toast.makeText(getApplicationContext(), "Mai este o zi si expira orarul", Toast.LENGTH_SHORT).show();
+                           System.out.println("Mai este o zi si expira orarul");
+                           btnDay.setVisibility(View.INVISIBLE);
+                           btnWeek.setVisibility(View.INVISIBLE);
 
-                   }
-                   else if(zicurenta-lastDayScheduele==0)
-                   {
-                       Toast.makeText(getApplicationContext(),"Astazi expira orarul.Ar trebui sa il reinoiti",Toast.LENGTH_SHORT).show();
-                       System.out.println("Astazi expira orarul.Ar trebui sa il reinoiti");
-                       btnDay.setVisibility(View.INVISIBLE);
-                       btnWeek.setVisibility(View.INVISIBLE);
+                       } else if (zicurenta - lastDayScheduele == 0) {
+                           Toast.makeText(getApplicationContext(), "Astazi expira orarul.Ar trebui sa il reinoiti", Toast.LENGTH_SHORT).show();
+                           System.out.println("Astazi expira orarul.Ar trebui sa il reinoiti");
+                           btnDay.setVisibility(View.INVISIBLE);
+                           btnWeek.setVisibility(View.INVISIBLE);
 
+                       }
                    }
 
                     //adaugam zilele adaugate_sapt respectiva

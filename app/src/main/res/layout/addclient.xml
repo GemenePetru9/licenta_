@@ -37,9 +37,9 @@
         android:id="@+id/editTextFirstNameEmp1"
         android:layout_width="174dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewAdaugareEmployees"
-        android:layout_alignLeft="@+id/textViewAdaugareEmployees"
         android:layout_below="@+id/textViewNumarEmp"
+        android:layout_marginLeft="10dp"
+        android:layout_toStartOf="@+id/editTextLastNameEmp1"
         android:hint="First Name"
         android:inputType="textPersonName" />
 
@@ -47,31 +47,117 @@
         android:id="@+id/editTextLastNameEmp1"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/edit_spinner"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/textViewNumarEmp"
         android:layout_marginRight="10dp"
         android:hint="Last Name"
         android:inputType="textPersonName" />
 
-    <Spinner
-        android:id="@+id/type_spinner"
-        android:layout_width="147dp"
-        android:layout_height="wrap_content"
-
+    <com.reginald.editspinner.EditSpinner
+        android:id="@+id/edit_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/editTextFirstNameEmp1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:dropDownDrawable="@drawable/posotion"
+        app:dropDownDrawableHeight="25dp"
+        app:dropDownDrawableSpacing="15dp"
+        app:dropDownDrawableWidth="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.353" />
+
+    <TextView
+        android:id="@+id/textViewColor"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_weight="3"
-        android:entries="@array/types"
-        android:gravity="center_vertical" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="142dp"
+        android:drawableRight="@drawable/color_palet"
+        android:text="Choose Color"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.635" />
+
+    <LinearLayout
+        android:id="@+id/paletaCulori"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#cccfe1"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintVertical_bias="0.605">
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Choose a color for this shift!"
+            android:textSize="18sp" />
+
+        <com.skydoves.multicolorpicker.MultiColorPickerView
+            android:id="@+id/multiColorPickerView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.569"
+            app:palette="@drawable/palette" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="10dp"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/btnOk"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:onClick="onOk"
+                android:text="Ok" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
     <GridView
         android:id="@+id/gridView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button1"
-        android:layout_centerHorizontal="true"
-        android:numColumns="1" >
+        android:layout_height="295dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:numColumns="1">
 
     </GridView>
 
@@ -79,7 +165,7 @@
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/type_spinner"
+        android:layout_below="@+id/textViewColor"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:text="Click Here to Add Client" />
@@ -88,8 +174,8 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/type_spinner"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/textViewColor"
         android:layout_marginRight="10dp"
         android:text="Finish" />
 

@@ -77,6 +77,20 @@ public class MainActivity extends Activity implements  View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /*Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String tmp = "";
+            for (String key : bundle.keySet()) {
+                Object value = bundle.get(key);
+                tmp += key + ": " + value + "\n\n";
+            }
+
+            System.out.println("Date de la notificare_Main:"+tmp);
+
+        }*/
+
+
+
 
 
 

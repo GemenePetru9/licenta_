@@ -7,6 +7,8 @@ import android.app.usage.UsageEvents;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,10 +28,12 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +46,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
+import com.madrapps.pikolo.HSLColorPicker;
+import com.madrapps.pikolo.listeners.SimpleColorSelectionListener;
+import com.skydoves.multicolorpicker.ColorEnvelope;
+import com.skydoves.multicolorpicker.MultiColorPickerView;
+import com.skydoves.multicolorpicker.listeners.ColorListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,6 +90,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private TextView textViewSun;
     private Boolean saptamana1=false;
     private Boolean saptamana2=false;
+    private Boolean editMode=false;
 
     private Spinner spinner1;
     private Spinner spinner2;
@@ -120,9 +131,17 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private String scheduleState="";
     int count = 0;
     int countDays=0;
+    private Toolbar toolbarLate;
     // private static Map<Integer, String[]> saptamanal;
 
     private Client user;
+
+    private ImageView imageView;
+    private Button btnok;
+    private  Button btncancel;
+    private LinearLayout paletaCulori;
+    private  int culoare=0;
+    MultiColorPickerView multiColorPickerView;
 
     // private String[] day={"off","off","off","off","off","off","off"};
 
@@ -146,6 +165,17 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         setContentView(R.layout.shift);
 
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String tmp = "";
+            for (String key : bundle.keySet()) {
+                Object value = bundle.get(key);
+                tmp += key + ": " + value + "\n\n";
+            }
+
+            System.out.println("Date de la notificare_Tabel:"+tmp);
+
+        }
 
 
         usr=FirebaseAuth.getInstance().getCurrentUser();
@@ -157,6 +187,9 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             StrictMode.setThreadPolicy(policy);/////   android.os.NetworkOnMainThreadException
            //at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(
         }
+
+       FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
+      //  FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid());
 
 
 
@@ -206,7 +239,48 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
        btnAddMap = (Button) findViewById(R.id.btnAddGeofence);
         btnlogout= (Button) findViewById(R.id.btnLogOutManager);
         Button btnsendNot=(Button)findViewById(R.id.btnSendNotifcation) ;
+        paletaCulori = (LinearLayout) findViewById(R.id.paletaCulori);
+        btnok = (Button) findViewById(R.id.btnOk);
+        btncancel = (Button) findViewById(R.id.btnCancel);
+        multiColorPickerView = findViewById(R.id.multiColorPickerView);
+       // toolbarLate=(Toolbar) findViewById(R.id.toolbarLate) ;
 
+
+
+        Drawable myDrawable = getResources().getDrawable(R.drawable.selector);
+
+        multiColorPickerView.addSelector(myDrawable, new ColorListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope) {
+                //int color = envelope.getColor();
+                culoare = envelope.getColor();
+                // int[] rgb = envelope.getRgb();
+                String htmlCode = envelope.getHtmlCode();
+
+                //imageView.setBackgroundColor(color);
+                // TODO
+
+            }
+        });
+
+        btnok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(culoare==0) {
+                    Toast.makeText(getApplicationContext(), "Selectati o culoare", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                   // imageView.setBackgroundColor(culoare);
+                    paletaCulori.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+        btncancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paletaCulori.setVisibility(View.INVISIBLE);
+            }
+        });
 
         now = Calendar.getInstance();
 
@@ -282,17 +356,20 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         gridShift = (GridView) findViewById(R.id.gridViewShift);
 
 
-      /*  Bundle e = getIntent().getExtras();
+      /* Bundle e = getIntent().getExtras();
         if (e != null) {
 
 
-            scheduleState = e.getString("keySchedule");
-            System.out.println("Schedule State Bundle:" + scheduleState);
+            String numeAngSick = e.getString("numeAng");
+            System.out.println("Numele ang Sick" + numeAngSick);
+            Intent intent = new Intent(getBaseContext(), Replacement.class);
+            intent.putExtra("key", numeAngSick);
+            startActivity(intent);
 
         }
         else
         {
-            System.out.println("Schedule State Bundle este null");
+            System.out.println("Numele ang Sicke Bundle este null");
         }*/
 
 
@@ -325,7 +402,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         btnsendNot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+                pushNotification("topic",usr.getUid(),"Your schedule has been posted!","SCHEDULE");
             }
         });
         textViewMun.setOnClickListener(new View.OnClickListener() {
@@ -334,7 +411,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 btnWeek.setVisibility(View.VISIBLE);
                 btnDay.setVisibility(View.INVISIBLE);
 
-                setDayShiftAdapter("Monday");
+                //setDayShiftAdapter("Monday");
+                setShiftAdapter();
 
             }
         });
@@ -449,8 +527,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                     textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
                     textViewData.setText(strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE));
 
+                        gridShift.setAdapter(shiftAdapter);
 
-                    gridShift.setAdapter(shiftAdapter);
                 }
                 else
                 {
@@ -509,7 +587,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                         //adaugam pentru prima sapt
                         if(firstSchedule)
                         {
-                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
+                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!","SCHEDULE");
                             databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
                             databaseReference.setValue(mEmpDataSet.get(i).getDay());
                             if (day1 != null && day2 != null) {
@@ -672,6 +750,9 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         }
     }
 
+
+
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, final View viewShift, final int position, long l) {
         // String ora=" ";
@@ -686,6 +767,23 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         constraintLayout.setVisibility(View.VISIBLE);
         try {
             setOra();
+           ImageView colorPallete=findViewById(R.id.imageViewColorPallette);
+            culoare=0;
+
+            colorPallete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), "Color Picker", Toast.LENGTH_SHORT).show();
+                    // multiColorPickerView.setVisibility(View.VISIBLE);
+                    paletaCulori.setVisibility(View.VISIBLE);
+                    paletaCulori.bringToFront();
+                    culoare=0;
+                }
+            });
+
+
+
+
             btnAddShift.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -714,10 +812,21 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                             String currentDay = strDays[now.get(Calendar.DAY_OF_WEEK)-1];
                             //element=((TextView) v);
                             ((TextView) v).setText(ora);
-                            ((TextView) v).setBackgroundColor(Color.GREEN);
+                            int culoare= mEmpDataSet.get(position).getCuloare();
+                            if(culoare==0)
+                            {
+                                ((TextView) v).setBackgroundColor(Color.GREEN);
+                            }
+                            else
+                            {
+                                ((TextView) v).setBackgroundColor(culoare);
+                            }
+
+                           // ((TextView) v).setBackgroundColor(culoare);
 
 
                             mEmpDataSet.get(position).setShift(ora);
+                            //setare pozitie --culoare
                             String shiftClient = mEmpDataSet.get(position).getNume() + ":"+mEmpDataSet.get(position).getShift();
                             System.out.println("Adaugare Shit la CLient:" + shiftClient);
 
@@ -786,7 +895,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
     //pentru notificare
     //crea
-    private void pushNotification(String type,String topic,String notification) {
+    private void pushNotification(String type,String topic,String notification,String click) {
         JSONObject jPayload = new JSONObject();
         JSONObject jNotification = new JSONObject();
         JSONObject jData = new JSONObject();
@@ -796,7 +905,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             jNotification.put("body", notification);
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
-            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+            jNotification.put("click_action", click);
             jNotification.put("icon", "ic_notification");
 
             jData.put("picture", "http://opsbug.com/static/google-io.jpg");
@@ -933,11 +1042,41 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             case R.id.editSchedule: {
                 Toast.makeText(getApplicationContext(),"Edit this Schedule",Toast.LENGTH_SHORT).show();
                 //editSchedule();
+                editMode=true;
+
+                countDays=0;
+                System.out.println("Count edit mode:"+countDays);
+
+
+
+
+                //face shift greeview insizibil
+                setEmpAdapter();
+               // setDayShiftAdapter(strDays[now.get(Calendar.DAY_OF_WEEK) - 1]);//trimitem ziua curenta
+                setShiftAdapter();
+                gridview.setVisibility(View.VISIBLE);
+                gridShift.setVisibility(View.VISIBLE);
+                gridLayout.setVisibility(View.VISIBLE);
+                gridLayout2.setVisibility(View.INVISIBLE);
+                gridDay.setVisibility(View.INVISIBLE);
+                textViewDay.setText(strDays[now.get(Calendar.DAY_OF_WEEK) - 1] + ", " + strMonths[now.get(Calendar.MONTH)] + ", " + now.get(Calendar.DATE) + ", " + now.get(Calendar.YEAR));
+
+
+                //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
+
+                // DayAdapter dayAdapter= new DayAdapter(getApplicationContext(), mEmpDataSet);
+                //gridDay.setAdapter(dayAdapter);
+                // gridDay.setStretchMode();
+                btnWeek.setVisibility(View.VISIBLE);
+                btnDay.setVisibility(View.INVISIBLE);
                 return true;
             }
             case R.id.addEmployer:
             {
                 //addEmployer activity
+                Intent intent = new Intent(getBaseContext(), AddEmployees.class);
+                intent.putExtra("key", 1);
+                startActivity(intent);
                 return true;
             }
             case R.id.showToken:
@@ -1116,7 +1255,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 {
                     //atunci face primul orar
                     firstSchedule=true;
-                    FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid());
+                    FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid());
 
                     setEmpAdapter();
                     setShiftAdapter();
@@ -1194,6 +1334,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                             itemsReceived.setDay((  Map<String, String>) mapObj.get("day"));
 
                                 itemsReceived.setSapt((String) mapObj.get("sapt"));
+                                itemsReceived.setCuloare(((Long) mapObj.get("culoare")).intValue());
 
                                 // No such key
 

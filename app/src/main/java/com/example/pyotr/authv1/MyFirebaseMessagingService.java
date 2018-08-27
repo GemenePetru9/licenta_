@@ -12,10 +12,14 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +29,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String FCM_PARAM = "picture";
     private static final String CHANNEL_NAME = "FCM";
     private static final String CHANNEL_DESC = "Firebase Cloud Messaging";
+    private static final String TAG ="FirebaseMessagingServic";
     private int numMessages = 0;
 
     @Override
@@ -33,19 +38,60 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         Map<String, String> data = remoteMessage.getData();
         Log.d("FROM", remoteMessage.getFrom());
+
+        System.out.println("Notification:"+remoteMessage.getData().toString());
         sendNotification(notification, data);
+
     }
 
     private void sendNotification(RemoteMessage.Notification notification, Map<String, String> data) {
+
         Bundle bundle = new Bundle();
         bundle.putString(FCM_PARAM, data.get(FCM_PARAM));
 
-        Intent intent = new Intent(this, Login_Emp.class);
+        Intent intent = new Intent(this, TabelClienti.class);
         intent.putExtras(bundle);
 
+
+        /*
+
+       if(click_action.equals("SICK")){
+            intent = new Intent(this, TabelClienti.class);//Manger OPENSHIFTS
+            String[] date=notification.getBody().split(" ");
+            String nume="";
+            if(date!=null)
+            {
+                nume=date[0]+" "+date[1];
+            }
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtras(bundle);
+            intent.putExtra("numeAng",nume);
+        }
+        else if(click_action.equals("SCHEDULE")){
+            intent = new Intent(this, Login_Emp.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtras(bundle);
+        }
+        else if(click_action.equals("MAINACTIVITY")){
+            intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtras(bundle);
+        }else{
+            intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtras(bundle);
+        }
+
+
+*/
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id))
+
+        // Check if message contains a notification payload.
+
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id))
                 .setContentTitle(notification.getTitle())
                 .setContentText(notification.getBody())
                 .setAutoCancel(true)
@@ -53,12 +99,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.win))
                 .setContentIntent(pendingIntent)
                 .setContentInfo("Hello")
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setColor(getColor(R.color.colorAccent))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round))
+                .setColor(  ContextCompat.getColor(getApplicationContext(),R.color.colorAccent))
                 .setLights(Color.RED, 1000, 300)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setNumber(++numMessages)
-                .setSmallIcon(R.drawable.ic_launcher_background);
+                .setSmallIcon(R.drawable.notification_icon);
 
         try {
             String picture = data.get(FCM_PARAM);

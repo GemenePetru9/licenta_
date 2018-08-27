@@ -17,6 +17,7 @@ public class Client {
      private String clientId;
      private String shift;
      private String sapt;
+     private int culoare;
     //private String[] day={"off","off","off","off","off","off","off"};
     private Map<String,String> day=createMap();
 
@@ -37,11 +38,12 @@ public class Client {
     public Client() {
     }
 
-    public Client(String clientId,String nume, String prenume, String pozitie) {
+    public Client(String clientId,String nume, String prenume, String pozitie,int culoare) {
         this.nume = nume;
         this.prenume = prenume;
         this.pozitie = pozitie;
         this.clientId=clientId;
+        this.culoare=culoare;
     }
 
     /*public Client(Map<String, String> shift_per_day) {
@@ -49,6 +51,13 @@ public class Client {
         }
     */
 
+    public int getCuloare() {
+        return culoare;
+    }
+
+    public void setCuloare(int culoare) {
+        this.culoare = culoare;
+    }
 
     public String getClientId() {
         return clientId;

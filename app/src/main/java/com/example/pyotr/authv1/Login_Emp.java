@@ -2,9 +2,14 @@ package com.example.pyotr.authv1;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -28,13 +33,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,6 +57,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
 
@@ -63,6 +75,9 @@ public class Login_Emp extends Activity  {
     private TextView textViewShift;
     private Button clockin;
     private String numele="";
+    private ImageView imageViewSick;
+    private String currentDayShift="";
+    private FirebaseUser usr;
     private static Boolean clockState=false;
    List<String> das=new ArrayList<String>();
     List<String> dateToIntent=new ArrayList<String>();
@@ -94,11 +109,22 @@ public class Login_Emp extends Activity  {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_login_angajat);
+
+        if (android.os.Build.VERSION.SDK_INT > 9)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);/////   android.os.NetworkOnMainThreadException
+            //at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(
+        }
+
         databaseEmp = FirebaseDatabase.getInstance().getReference();
 
 
         empRef = FirebaseDatabase.getInstance().getReference("angajati");
+
+        usr=FirebaseAuth.getInstance().getCurrentUser();
         clockin=(Button)findViewById(R.id.button) ;
+        imageViewSick= findViewById(R.id.imageViewSick);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -216,15 +242,84 @@ public class Login_Emp extends Activity  {
             }
         });
 
+        imageViewSick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //alert dialog
+                AlertDialog.Builder builder;
+
+                builder = new AlertDialog.Builder(Login_Emp.this, android.R.style.Theme_Material_Dialog_Alert);
+               // if (currentDayShift.equals("off")) {
+                   // Toast.makeText(Login_Emp.this, "Today you are OFF, you can't announce sick!", Toast.LENGTH_SHORT).show();
+                //} else {
+
+                    builder.setTitle("Are you sure you want to anounce sick for today?")
+                            //.setMessage("Send this to your employee:"+usr.getUid())
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue with delete
+
+                                    empRef.child(usr.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            String topic = (dataSnapshot.getValue(Employee.class).getManager()) + "_MANAGER";
+
+                                            String nume = "";
+                                            System.out.println("Ang in anunta sick" + dataSnapshot);
+                                            nume += (dataSnapshot.getValue(Employee.class).getNume());
+                                            nume +=" "+(dataSnapshot.getValue(Employee.class).getPrenume());
+                                            System.out.println("Ang nume:" + nume);
+
+                                            pushNotification("topic", topic, nume + " is sick today!","SICK");
+
+
+                                        }
+
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            // Getting Post failed, log a message
+                                            Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                                            // ...
+                                        }
+
+
+                                    });
+
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+
+                }
+           // }
+        });
+
+
+
+
+
 
     }
-
-
-
 
     public void subscribe(String managerID)
     {
         FirebaseMessaging.getInstance().subscribeToTopic(managerID);
+    }
+    public void subscribeToAvailable(String managerID)
+    {
+        FirebaseMessaging.getInstance().subscribeToTopic(managerID+"_AVAILABLE");
+    }
+    public void unsubscribeToAvailable(String managerID)
+    {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(managerID+"_AVAILABLE");
     }
 
     public void getNume() {
@@ -261,7 +356,7 @@ public class Login_Emp extends Activity  {
     }
 
 
-    public void getData(final String nume, String manager)
+    public void getData(final String nume, final String manager)
     {
 
 
@@ -306,10 +401,14 @@ public class Login_Emp extends Activity  {
                                         das.add(jsonObject.getString("Thusday"));
                                         das.add(jsonObject.getString("Friday"));
                                         das.add(jsonObject.getString("Saturday"));
+
+                                       // das.add(manager);
+
                                         String name=(String) mapObj.get("nume") + " " + (String) mapObj.get("prenume");
 
                                         setAdapter(das,name);//setam adapter cu orele clientului
-                                        showShift();
+                                        showShift(manager);
+                                       // subscribeToAvailable(manager);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -344,7 +443,7 @@ public class Login_Emp extends Activity  {
 
     }
 
-    public void showShift() {
+    public void showShift(String manager) {
         now = Calendar.getInstance();
         int index = now.get(Calendar.DAY_OF_WEEK) - 1;
         String dayCur = strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
@@ -352,11 +451,25 @@ public class Login_Emp extends Activity  {
         String shiftCurrent = das.get(index);
         System.out.println("Shift:" + dayCur+"-"+shiftCurrent + "-" + index);
         String shiftFinal = "";
+        currentDayShift=shiftCurrent;
         if (shiftCurrent.equals("off")) {
             textViewShift.setText("Off");
+
+
+            //facem Subscribe
+
+           subscribeToAvailable(manager);
+
+            //facem Subscribe pentru topic disponibil//
+
         } else {
             String[] part = shiftCurrent.split(" ");
             textViewShift.setText(part[0] + "-" + part[1]);
+
+            //lucreaza deja deci un este disponibil
+
+            //facem Subscribe pentru topic disponibil//
+            unsubscribeToAvailable(manager);
 
 
         }
@@ -404,6 +517,86 @@ public class Login_Emp extends Activity  {
         intent.putExtra( NOTIFICATION_MSG, msg );
         return intent;
     }
+
+
+
+
+    //notificare pentru manager
+
+    //pentru notificare
+
+    private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
+    //crea
+    private void pushNotification(String type,String topic,String notification,String clickAction) {
+        JSONObject jPayload = new JSONObject();
+        JSONObject jNotification = new JSONObject();
+        JSONObject jData = new JSONObject();
+        try {
+            jNotification.put("title", "Notification from employee");
+            //jNotification.put("body", "Your schedule has been posted!");
+            jNotification.put("body", notification);
+            jNotification.put("sound", "default");
+            jNotification.put("badge", "1");
+            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+            jNotification.put("icon", "ic_notification");
+
+            jData.put("picture", "http://opsbug.com/static/google-io.jpg");
+
+            switch(type) {
+              /*  case "tokens":
+                    JSONArray ja = new JSONArray();
+                    ja.put("c5pBXXsuCN0:APA91bH8nLMt084KpzMrmSWRS2SnKZudyNjtFVxLRG7VFEFk_RgOm-Q5EQr_oOcLbVcCjFH6vIXIyWhST1jdhR8WMatujccY5uy1TE0hkppW_TSnSBiUsH_tRReutEgsmIMmq8fexTmL");
+                    ja.put(FirebaseInstanceId.getInstance().getToken());
+                    jPayload.put("registration_ids", ja);
+                    break;*/
+                case "topic":
+                    String topics="/topics/"+topic;
+                    jPayload.put("to", topics);
+                    break;
+                case "condition":
+                    jPayload.put("condition", "'sport' in topics || 'news' in topics");
+                    break;
+                default:
+                    jPayload.put("to", FirebaseInstanceId.getInstance().getToken());
+            }
+
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data", jData);
+
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", AUTH_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            // Send FCM message content.
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(jPayload.toString().getBytes());
+
+            // Read FCM response.
+            InputStream inputStream = conn.getInputStream();
+            final String resp = convertStreamToString(inputStream);
+
+            Handler h = new Handler(Looper.getMainLooper());
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    //  mTextView.setText(resp);
+                    Log.i(TAG,resp);
+                }
+            });
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String convertStreamToString(InputStream is) {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next().replace(",", ",\n") : "";
+    }
+
 
 
 

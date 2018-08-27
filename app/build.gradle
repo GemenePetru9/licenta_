@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.pyotr.authv1"
-        minSdkVersion 23
+        minSdkVersion 18
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -22,18 +22,27 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'com.google.code.gson:gson:2.8.5'
+    //
+    implementation 'com.github.madrapps:pikolo:1.1.6' //paleta de culori
+    implementation "com.github.skydoves:multicolorpicker:1.0.7"
+   implementation 'com.reginald:editspinner:1.0.0' //edit spinner
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-messaging:17.1.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.0'
 
     //pentru map
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-places:15.0.1'
-    implementation 'com.firebase:geofire-android:2.1.1'
+    implementation 'com.firebase:geofire-android:2.3.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:animated-vector-drawable:27.1.1'
+
+
+    implementation 'com.android.support:support-media-compat:27.1.1'
     testImplementation 'junit:junit:4.12'
     //noinspection GradleCompatible
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

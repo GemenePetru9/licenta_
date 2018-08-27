@@ -11,6 +11,12 @@
         <item>Position B</item>
         <item>Position C</item>
     </string-array>
+    <string-array name="pozitii">
+        <item>Manager</item>
+        <item>Staff 1</item>
+        <item>Staff 2</item>
+    </string-array>
+
 
     <string-array name="ore">
         <item>08:00</item>
@@ -53,5 +59,6 @@
     <string name="subscribed">Subscribed to news topic</string>
     <string name="unsubscribed">Unsubscribed from news topic</string>
     <string name="numar_angajati_complet">Puteti continua</string>
+
 
 </resources>

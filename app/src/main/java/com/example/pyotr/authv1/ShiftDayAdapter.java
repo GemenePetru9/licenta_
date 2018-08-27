@@ -78,29 +78,38 @@ public class ShiftDayAdapter extends BaseAdapter {
             Map<String,String> date=mEmployeeData.get(position).getDay();
             System.out.println("DayAdapter:"+date.size());
             System.out.println("DayAdapter:"+date.get("Monday"));
+         int culoare=mEmployeeData.get(position).getCuloare();
+
             if(ziua!=null) {
 
                 switch (ziua) {
                     case "Monday":
                         holder.sEmployeeShift.setText(date.get("Monday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Monday"),culoare);
                         break;
                     case "Tuesday":
                         holder.sEmployeeShift.setText(date.get("Tuesday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Tuesday"),culoare);
                         break;
                     case "Wednesday":
                         holder.sEmployeeShift.setText(date.get("Wednesday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Wednesday"),culoare);
                         break;
                     case "Thusday":
                         holder.sEmployeeShift.setText(date.get("Thusday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Thusday"),culoare);
                         break;
                     case "Friday":
                         holder.sEmployeeShift.setText(date.get("Friday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Friday"),culoare);
                         break;
                     case "Saturday":
                         holder.sEmployeeShift.setText(date.get("Saturday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Saturday"),culoare);
                         break;
                     case "Sunday":
                         holder.sEmployeeShift.setText(date.get("Sunday"));
+                        checkIfIsDayOff(holder.sEmployeeShift,date.get("Sunday"),culoare);
                         break;
                 }
             }
@@ -109,6 +118,17 @@ public class ShiftDayAdapter extends BaseAdapter {
         }
 
         return convertView;
+    }
+    private void checkIfIsDayOff(TextView textView,String shift,int culoare)
+    {
+        if(!shift.equals("off"))
+        {
+            textView.setBackgroundColor(culoare);
+        }
+        else
+        {
+
+        }
     }
 
     private static class ViewHolder {

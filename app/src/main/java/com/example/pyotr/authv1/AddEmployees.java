@@ -3,6 +3,7 @@ package com.example.pyotr.authv1;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -31,6 +33,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reginald.editspinner.EditSpinner;
+import com.skydoves.multicolorpicker.ColorEnvelope;
+import com.skydoves.multicolorpicker.MultiColorPickerView;
+import com.skydoves.multicolorpicker.listeners.ColorListener;
 
 import org.json.JSONObject;
 
@@ -58,7 +64,12 @@ public class AddEmployees extends Activity {
     private String userid="";
     private String value="";
     private int dif=0;
-
+    private  int culoare;
+    private EditSpinner mEditSpinner;
+    private Button btnok;
+    private  Button btncancel;
+    private LinearLayout paletaCulori;
+    MultiColorPickerView multiColorPickerView;
     DatabaseReference databaseClienti;
     DatabaseReference managerRef;
 
@@ -72,6 +83,12 @@ public class AddEmployees extends Activity {
         databaseClienti= FirebaseDatabase.getInstance().getReference("client");
 
         managerRef= FirebaseDatabase.getInstance().getReference("manager");
+
+
+        mEditSpinner = (EditSpinner) findViewById(R.id.edit_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.pozitii));
+        mEditSpinner.setAdapter(adapter);
 
         //get number of employyesss
         Bundle extras = getIntent().getExtras();
@@ -103,7 +120,7 @@ public class AddEmployees extends Activity {
 
         edittext1 = (EditText)findViewById(R.id.editTextFirstNameEmp1);
         edittext2 = (EditText)findViewById(R.id.editTextLastNameEmp1);
-        spinner=(Spinner) findViewById(R.id.type_spinner);
+       // spinner=(Spinner) findViewById(R.id.type_spinner);
 
         // ITEM_LIST = new ArrayList<String>();
         listaClienti=new ArrayList<Client>();
@@ -111,6 +128,66 @@ public class AddEmployees extends Activity {
         arrayadapter = new ArrayAdapter<Client>(getApplicationContext(),android.R.layout.simple_list_item_1,listaClienti );
 
         gridview.setAdapter(arrayadapter);
+
+
+
+        paletaCulori = (LinearLayout) findViewById(R.id.paletaCulori);
+        btnok = (Button) findViewById(R.id.btnOk);
+        btncancel = (Button) findViewById(R.id.btnCancel);
+        multiColorPickerView = findViewById(R.id.multiColorPickerView);
+        // toolbarLate=(Toolbar) findViewById(R.id.toolbarLate) ;
+
+
+
+        Drawable myDrawable = getResources().getDrawable(R.drawable.selector);
+
+        multiColorPickerView.addSelector(myDrawable, new ColorListener() {
+            @Override
+            public void onColorSelected(ColorEnvelope envelope) {
+                //int color = envelope.getColor();
+                culoare = envelope.getColor();
+                // int[] rgb = envelope.getRgb();
+                String htmlCode = envelope.getHtmlCode();
+
+                //imageView.setBackgroundColor(color);
+                // TODO
+
+            }
+        });
+
+        btnok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(culoare==0) {
+                    Toast.makeText(getApplicationContext(), "Selectati o culoare", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    // imageView.setBackgroundColor(culoare);
+                    paletaCulori.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+        btncancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paletaCulori.setVisibility(View.INVISIBLE);
+            }
+        });
+
+
+        TextView colorPallete=findViewById(R.id.textViewColor);
+        culoare=0;
+
+        colorPallete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Color Picker", Toast.LENGTH_SHORT).show();
+                // multiColorPickerView.setVisibility(View.VISIBLE);
+                paletaCulori.setVisibility(View.VISIBLE);
+                paletaCulori.bringToFront();
+                culoare=0;
+            }
+        });
 
         button.setOnClickListener( new View.OnClickListener() {
 
@@ -131,7 +208,17 @@ public class AddEmployees extends Activity {
                             .child(uid);
                     DatabaseReference pushRef = adminRef.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
                     String id = pushRef.getKey();
-                    Client user=new Client(id,edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
+                 //   Client user=new Client(id,edittext1.getText().toString(),edittext2.getText().toString(),spinner.getSelectedItem().toString());
+                    Client user;
+                    if(culoare==0)
+                    {
+                        //punem default gri
+                        user=new Client(id,edittext1.getText().toString(),edittext2.getText().toString(),mEditSpinner.getText().toString(),R.color.colorOverlay);
+
+                    }
+                    else {
+                       user = new Client(id, edittext1.getText().toString(), edittext2.getText().toString(), mEditSpinner.getText().toString(), culoare);
+                    }
                     pushRef.setValue(user)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -178,6 +265,7 @@ public class AddEmployees extends Activity {
                     Toast.makeText(getApplicationContext(), "Item Added SuccessFully", Toast.LENGTH_LONG).show();
 
 
+                    culoare=0;
                 }}
         });
         btnFinish.setOnClickListener( new View.OnClickListener() {

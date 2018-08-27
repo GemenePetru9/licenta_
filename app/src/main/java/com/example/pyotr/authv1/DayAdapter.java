@@ -84,17 +84,24 @@ public class DayAdapter extends BaseAdapter {
         //Change the content here
         if (mEmployeeData.get(position) != null && mEmployeeData.get(position).getDay()!=null) {
             Map<String,String> date1=mEmployeeData.get(position).getDay();
+            int culoare=mEmployeeData.get(position).getCuloare();
             System.out.println("DayAdapter:"+date1.size());
             System.out.println("DayAdapter:"+date1.get(0));
             holder.textViewNume.setText(mEmployeeData.get(position).getNume());
-
             holder.sDay1.setText(date1.get("Monday"));
+            checkIfIsDayOff(holder.sDay1,date1.get("Monday"),culoare);
             holder.sDay2.setText(date1.get("Tuesday"));
+            checkIfIsDayOff(holder.sDay2,date1.get("Tuesday"),culoare);
             holder.sDay3.setText(date1.get("Wednesday"));
+            checkIfIsDayOff(holder.sDay3,date1.get("Wednesday"),culoare);
             holder.sDay4.setText(date1.get("Thusday"));
+            checkIfIsDayOff(holder.sDay4,date1.get("Thusday"),culoare);
             holder.sDay5.setText(date1.get("Friday"));
+            checkIfIsDayOff(holder.sDay5,date1.get("Friday"),culoare);
             holder.sDay6.setText(date1.get("Saturday"));
+            checkIfIsDayOff(holder.sDay6,date1.get("Saturday"),culoare);
             holder.sDay7.setText(date1.get("Sunday"));
+            checkIfIsDayOff(holder.sDay7,date1.get("Sunday"),culoare);
             //aici preluam datele
           // System.out.println("Date din DayAdapter:"+date1[6]);
             //holder.sFlowerPhotoPath.setImageResource(mFlowerData.get(position).getPhotoPath());
@@ -103,6 +110,17 @@ public class DayAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private void checkIfIsDayOff(TextView textView,String shift,int culoare)
+    {
+        if(!shift.equals("off"))
+        {
+            textView.setBackgroundColor(culoare);
+        }
+        else
+        {
+
+        }
+    }
     private static class ViewHolder {
         TextView sDay1;
         TextView sDay2;

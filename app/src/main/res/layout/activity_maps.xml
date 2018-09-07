@@ -8,13 +8,13 @@
     android:padding="10dp">
 
     <LinearLayout
+        android:id="@+id/linearLatLong"
         android:layout_width="363dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:id="@+id/linearLatLong"
-        android:layout_alignParentRight="true">
+        android:orientation="horizontal">
 
         <!-- <fragment
             android:id="@+id/place_autocomplete_fragment"
@@ -42,19 +42,19 @@
         android:id="@+id/open_button"
         android:layout_width="105dp"
         android:layout_height="40dp"
+        android:layout_alignLeft="@+id/linearLatLong"
         android:layout_alignStart="@+id/linearLatLong"
         android:layout_below="@+id/linearLatLong"
-        android:text="Search"
-        android:layout_alignLeft="@+id/linearLatLong" />
+        android:text="Search" />
 
     <Button
         android:id="@+id/btnSaveGeoFirebase"
         android:layout_width="105dp"
         android:layout_height="38dp"
         android:layout_alignEnd="@+id/linearLatLong"
+        android:layout_alignRight="@+id/linearLatLong"
         android:layout_below="@+id/linearLatLong"
-        android:text="Save"
-        android:layout_alignRight="@+id/linearLatLong" />
+        android:text="Save" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -63,9 +63,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_below="@+id/btnSaveGeoFirebase"
-        tools:context=".MapsActivity"
-        android:layout_alignParentRight="true" />
+        tools:context=".MapsActivity" />
 
     <TextView
         android:layout_width="wrap_content"

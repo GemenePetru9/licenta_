@@ -17,12 +17,12 @@
         android:id="@+id/previousDay"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/left"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="16dp" />
+        android:src="@drawable/left" />
 
     <ImageView
         android:id="@+id/nextDay"
@@ -30,8 +30,8 @@
         android:layout_height="20dp"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/textViewSapt"
-        android:src="@drawable/right"
-        android:layout_toRightOf="@+id/textViewSapt" />
+        android:layout_toRightOf="@+id/textViewSapt"
+        android:src="@drawable/right" />
 
     <TextView
         android:id="@+id/textViewSapt"
@@ -52,10 +52,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textViewSapt"
-        android:columnCount="14"
-        android:layout_alignParentLeft="true">
+        android:columnCount="17">
 
 
         <Button
@@ -73,84 +73,126 @@
             android:layout_gravity="center"
             android:layout_row="0"
 
-            android:text="8am" />
+            android:text="8am"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button1"
             android:layout_column="2"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="9am" />
+            android:text="9am"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button5"
             android:layout_column="3"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="10am" />
+            android:text="10am"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button6"
             android:layout_column="4"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="11am" />
+            android:text="11am"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button7"
             android:layout_column="5"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="12am" />
+            android:text="12am"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button11"
             android:layout_column="6"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="1pm" />
+            android:text="1pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button12"
             android:layout_column="7"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="2pm" />
+            android:text="2pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button17"
             android:layout_column="8"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="3pm" />
+            android:text="3pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button13"
             android:layout_column="9"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="4pm" />
+            android:text="4pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button14"
             android:layout_column="10"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="5pm" />
+            android:text="5pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button15"
             android:layout_column="11"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="6pm" />
+            android:text="6pm"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/button16"
             android:layout_column="12"
             android:layout_gravity="center"
             android:layout_row="0"
-            android:text="7pm" />
+            android:text="7pm"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/button18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="14"
+            android:layout_gravity="center"
+            android:layout_row="0"
+            android:text="9pm"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/button19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="15"
+            android:layout_gravity="center"
+            android:layout_row="0"
+            android:text="10pm"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/button8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="13"
+            android:layout_gravity="center"
+            android:layout_row="0"
+            android:text="8pm"
+            android:textSize="10sp" />
 
         <!--
         <Button
@@ -346,68 +388,6 @@
         android:visibility="invisible" />
 
 
-    <LinearLayout
-        android:id="@+id/paletaCulori"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btnSendNotifcation"
-        android:layout_centerHorizontal="true"
-        android:background="#cccfe1"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        app:layout_constraintVertical_bias="0.605">
-
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Choose a color for this shift!"
-            android:textSize="18sp" />
-
-        <com.skydoves.multicolorpicker.MultiColorPickerView
-            android:id="@+id/multiColorPickerView"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.569"
-            app:palette="@drawable/palette" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnCancel"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginLeft="10dp"
-                android:text="Cancel" />
-
-            <Button
-                android:id="@+id/btnOk"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:onClick="onOk"
-                android:text="Ok" />
-
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-
     <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/popuplayout"
@@ -430,10 +410,10 @@
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/spinner2"
             app:layout_constraintEnd_toEndOf="@+id/spinner2"
-            app:layout_constraintHorizontal_bias="0.051"
+            app:layout_constraintHorizontal_bias="0.333"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.98" />
+            app:layout_constraintVertical_bias="0.88" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -445,23 +425,10 @@
             android:src="@drawable/clock1"
             app:layout_constraintBottom_toTopOf="@+id/spinner"
             app:layout_constraintEnd_toStartOf="@+id/spinner2"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.236"
             app:layout_constraintStart_toStartOf="@+id/spinner"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
-
-        <ImageView
-            android:id="@+id/imageViewColorPallette"
-            android:layout_width="35dp"
-            android:layout_height="30dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="24dp"
-            android:src="@color/colorOverlay"
-            app:layout_constraintBottom_toTopOf="@+id/spinner2"
-            app:layout_constraintEnd_toEndOf="@+id/spinner2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
 
         <Spinner
             android:id="@+id/spinner"
@@ -549,10 +516,10 @@
         android:layout_width="76dp"
         android:layout_height="25dp"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:text="Week"
-        android:textSize="8sp"
-        android:layout_alignParentRight="true" />
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/btnDay"
@@ -566,30 +533,12 @@
         android:visibility="invisible" />
 
     <Button
-        android:id="@+id/btnAddGeofence"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/btnPublish"
-        android:text="Add Geofence"
-        android:layout_toLeftOf="@+id/btnPublish" />
-
-    <Button
         android:id="@+id/btnLogOutManager"
         android:layout_width="94dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/gridViewClienti"
-        android:text="log out"
-        android:layout_toRightOf="@+id/gridViewClienti" />
-
-    <Button
-        android:id="@+id/btnSendNotifcation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/btnAddGeofence"
-        android:layout_below="@+id/gridViewShift"
-        android:text="send notification" />
+        android:layout_alignParentStart="true"
+        android:text="log out" />
 
 
 </RelativeLayout>

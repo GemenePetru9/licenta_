@@ -5,6 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" >
         <item android:id="@+id/newSchedule" android:title="New Schedule" app:showAsAction="never" />
         <item android:id="@+id/editSchedule" android:title="Edit Schedule" app:showAsAction="never" />
-        <item android:id="@+id/addEmployer" android:title="Add Employeer" app:showAsAction="never" />
+        <item android:id="@+id/addEmployer" android:title="Add Employee" app:showAsAction="never" />
+    <item android:id="@+id/addGeofence" android:title="Add Geofence" app:showAsAction="never" />
     <item android:id="@+id/showToken" android:title="Show Token" app:showAsAction="never" />
     </menu>

@@ -25,6 +25,7 @@ public class Employee extends User {
         this.nume = nume;
         this.prenume = prenume;
         this.manager = manager;
+
     }
 
     public String getManager() {
@@ -39,36 +40,36 @@ public class Employee extends User {
         return clientId;
     }
 
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     public String getNume() {
         return nume;
+    }
+
+    public void setNume(String nume) {
+        this.nume = nume;
     }
 
     public String getPrenume() {
         return prenume;
     }
 
-    public String getPozitie() {
-        return pozitie;
-    }
-    public String toString() {
-        return nume+" "+prenume+" "+pozitie;
-    }
-
-
-    public void setNume(String nume) {
-        this.nume = nume;
-    }
-
     public void setPrenume(String prenume) {
         this.prenume = prenume;
+    }
+
+    public String getPozitie() {
+        return pozitie;
     }
 
     public void setPozitie(String pozitie) {
         this.pozitie = pozitie;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public String toString() {
+        return nume+" "+prenume+" "+pozitie;
     }
 
 

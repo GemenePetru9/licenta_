@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">authv1</string>
+    <string name="app_name">Schedule Manager</string>
     <string name="buttonLogout">Log out</string>
     <string name="textViewUser"></string>
     <string name="textViewInfo">Please enter this basic information to help us set up your account</string>
@@ -32,6 +32,8 @@
         <item>18:00</item>
         <item>19:00</item>
         <item>20:00</item>
+        <item>21:00</item>
+        <item>22:00</item>
     </string-array>
     <string name="title_activity_maps">Map</string>
 
@@ -59,6 +61,9 @@
     <string name="subscribed">Subscribed to news topic</string>
     <string name="unsubscribed">Unsubscribed from news topic</string>
     <string name="numar_angajati_complet">Puteti continua</string>
+    <string name="seconds">Seconds</string>
+    <string name="minutes">Minutes</string>
+    <string name="hours">Hours</string>
 
 
 </resources>

@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,10 +65,19 @@ import javax.security.auth.login.LoginException;
 import static android.content.ContentValues.TAG;
 
 public class Login_Emp extends Activity  {
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+    private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
+    private static Boolean clockState=false;
     ArrayList<Client> mEmpDataSet = new ArrayList<>();
     DatabaseReference databaseEmp;
     DatabaseReference empRef;
-
+   List<String> das=new ArrayList<String>();
+    List<String> dateToIntent=new ArrayList<String>();
+    String json="";
+    List<String> date=new ArrayList<>();
+    String managerId="";
+    //String nume="";
+    int count=0;
     private TextView textViewDay;
     private Calendar now;
     private Button logout;
@@ -75,20 +85,13 @@ public class Login_Emp extends Activity  {
     private TextView textViewShift;
     private Button clockin;
     private String numele="";
+    private String managerul="";
     private ImageView imageViewSick;
+    private ImageView imageViewLate;
     private String currentDayShift="";
     private FirebaseUser usr;
-    private static Boolean clockState=false;
-   List<String> das=new ArrayList<String>();
-    List<String> dateToIntent=new ArrayList<String>();
-
-
-    String json="";
-    List<String> date=new ArrayList<>();
-    String managerId="";
-
-    //String nume="";
-    int count=0;
+    private  int h=0;
+    private  int s=0;
  // public String[] day={"off","off","off","off","off","off","off"};
     private String[] strDays = new String[]{
             "Sunday",
@@ -102,7 +105,21 @@ public class Login_Emp extends Activity  {
     private String[] strMonths = new String[]{
             "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
     };
+    private TextView txtDay, txtHour, txtMinute, txtSecond;
+    private TextView tvEventStart;
+    private Handler handler;
+    private Runnable runnable;
+    private RelativeLayout relativeLayoutCountDown;
 
+    // Create a Intent send by the notification
+   public static Intent makeNotificationIntent(Context context, String msg) {
+
+        clockState=true;
+        //am primit notification
+        Intent intent = new Intent( context, Login_Emp.class );
+        intent.putExtra( NOTIFICATION_MSG, msg );
+        return intent;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,12 +142,45 @@ public class Login_Emp extends Activity  {
         usr=FirebaseAuth.getInstance().getCurrentUser();
         clockin=(Button)findViewById(R.id.button) ;
         imageViewSick= findViewById(R.id.imageViewSick);
+        imageViewLate=findViewById(R.id.imageViewLate);
+        relativeLayoutCountDown=findViewById(R.id.relativeLayoutCountDown);
+
+
+        txtHour = (TextView) findViewById(R.id.txtHour);
+        txtMinute = (TextView) findViewById(R.id.txtMinute);
+        txtSecond = (TextView) findViewById(R.id.txtSecond);
+        tvEventStart = (TextView) findViewById(R.id.tveventStart);
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             managerId= extras.getString("key");
 
         }
+
+
+        //primim datele de la notificare si facem redirect catre openSHift si facem butonul OpneShift Enable
+       Bundle open = getIntent().getExtras();
+        if (open != null &&open.getBoolean("openShift")){
+
+            Boolean openShiftState = open.getBoolean("openShift");
+            System.out.println("Open ShiftState" + openShiftState);
+            Intent intent = new Intent(getBaseContext(), Angajat_Shift.class);
+            intent.putExtra("openShiftState", openShiftState);
+            intent.putExtra("managerID", usr.getUid());
+            if(numele!=null)
+            {
+                intent.putExtra("nume",numele);
+            }
+
+            startActivity(intent);
+
+        }
+        else
+        {
+            System.out.println("Open Shift openBundle este null");
+        }
+
 
         Bundle extrasMap = getIntent().getExtras();
         if (extrasMap != null) {
@@ -144,13 +194,27 @@ public class Login_Emp extends Activity  {
 
                 int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                 int minute  = Calendar.getInstance().get(Calendar.MINUTE);
+                s=minute;
+                h=hour;
 
                 System.out.println("Clockin Succes la ora: " + hour+":"+minute);
                 Toast.makeText(getApplicationContext(), "Clock in Succesful", Toast.LENGTH_SHORT).show();
+
+
                 //adaugam ora in baza de date si cand da clock out
             } else {
                 Toast.makeText(getApplicationContext(), "Trebuie sa fiti in zona de lucruc pentru a putea da clock in", Toast.LENGTH_SHORT).show();
             }
+        }
+
+        if(h!=0&&s!=0)
+        {
+            countDownStart(h,s);
+            System.out.println("Merge"+h+"-"+s);
+        }
+        else
+        {
+            System.out.println("Ore null");
         }
 
 
@@ -234,7 +298,9 @@ public class Login_Emp extends Activity  {
                     intent.putExtra("Thusday", dateToIntent.get(4));
                     intent.putExtra("Friday", dateToIntent.get(5));
                     intent.putExtra("Saturday", dateToIntent.get(6));
+                    intent.putExtra("managerID",managerul);
                     System.out.println("Date to intent:"+dateToIntent.get(6));
+                    System.out.println("Date to intent:"+managerul);
                 }
                 Bundle bndlAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.slideinleft, R.anim.slideinright).toBundle();
 
@@ -301,22 +367,137 @@ public class Login_Emp extends Activity  {
                 }
            // }
         });
+        imageViewLate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //alert dialog
+                AlertDialog.Builder builder;
+
+                builder = new AlertDialog.Builder(Login_Emp.this, android.R.style.Theme_Material_Dialog_Alert);
+                // if (currentDayShift.equals("off")) {
+                // Toast.makeText(Login_Emp.this, "Today you are OFF, you can't announce sick!", Toast.LENGTH_SHORT).show();
+                //} else {
+
+                builder.setTitle("Are you sure you want to anounce LATE for today?")
+                        //.setMessage("Send this to your employee:"+usr.getUid())
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+
+                                empRef.child(usr.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        String topic = (dataSnapshot.getValue(Employee.class).getManager()) + "_MANAGER";
+
+                                        String nume = "";
+                                        System.out.println("Ang in anunta late" + dataSnapshot);
+                                        nume += (dataSnapshot.getValue(Employee.class).getNume());
+                                        nume +=" "+(dataSnapshot.getValue(Employee.class).getPrenume());
+                                        System.out.println("Ang nume:" + nume);
+
+                                        pushNotification("topic", topic, nume + " announce that is going to be late!","LATE");
+
+
+                                    }
+
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        // Getting Post failed, log a message
+                                        Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                                        // ...
+                                    }
+
+
+                                });
+
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+
+            }
+            // }
+        });
 
 
 
 
 
 
+    }
+
+    public void countDownStart(final int hourClockIn, final int secondsClockIn) {
+       relativeLayoutCountDown.setVisibility(View.VISIBLE);
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(this, 10000);
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                            "HH:mm:ss");
+                    // Please here set your event date//YYYY-MM-DD
+
+
+                    String shiftEnd=textViewShift.getText().toString();
+                    String[] part = shiftEnd.split("-");
+                    Date futureDate = dateFormat.parse(part[1]+":00");
+                    String h=Integer.toString(hourClockIn);
+                    String min=Integer.toString(secondsClockIn);
+                    String shiftCurent=h+":"+min+":"+"00";
+                    Date currentDate = dateFormat.parse(shiftCurent);
+                    if (!currentDate.after(futureDate)) {
+                        long diff = futureDate.getTime()
+                                - currentDate.getTime();
+                        long hours = diff / (60 * 60 * 1000);
+                        diff -= hours * (60 * 60 * 1000);
+                        long minutes = diff / (60 * 1000);
+                        diff -= minutes * (60 * 1000);
+                        long seconds = diff / 1000;
+                        txtHour.setText("" + String.format("%02d", hours));
+                        txtMinute.setText("" + String.format("%02d", minutes));
+                        txtSecond.setText("" + String.format("%02d", seconds));
+                        System.out.println("CountDown:"+seconds);
+                    } else {
+                        tvEventStart.setVisibility(View.VISIBLE);
+                        tvEventStart.setText("The event started!");
+                        textViewGone();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.postDelayed(runnable, 1 * 1000);
+    }
+
+    public void textViewGone() {
+        findViewById(R.id.LinearLayout2).setVisibility(View.GONE);
+        findViewById(R.id.LinearLayout3).setVisibility(View.GONE);
+        findViewById(R.id.LinearLayout4).setVisibility(View.GONE);
+      //  findViewById(R.id.textViewheader1).setVisibility(View.GONE);
+       // findViewById(R.id.textViewheader2).setVisibility(View.GONE);
     }
 
     public void subscribe(String managerID)
     {
         FirebaseMessaging.getInstance().subscribeToTopic(managerID);
     }
+
     public void subscribeToAvailable(String managerID)
     {
         FirebaseMessaging.getInstance().subscribeToTopic(managerID+"_AVAILABLE");
+        Log.i(TAG,"Subscribe to Available");
     }
+
     public void unsubscribeToAvailable(String managerID)
     {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(managerID+"_AVAILABLE");
@@ -330,14 +511,15 @@ public class Login_Emp extends Activity  {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-              String nume="";
-              String manger="";
+                String nume="";
+                String manger="";
                 System.out.println("Ang:" + dataSnapshot);
                 nume=(dataSnapshot.getValue(Employee.class).getNume());
                 System.out.println("Ang nume:" + nume);
                 manger=( dataSnapshot.getValue(Employee.class).getManager());
 
                 getData(nume,manger);
+                // FirebaseMessaging.getInstance().unsubscribeFromTopic(manger);
                 subscribe(manger);
 
             }
@@ -355,12 +537,13 @@ public class Login_Emp extends Activity  {
         });
     }
 
-
     public void getData(final String nume, final String manager)
     {
 
 
 
+       // final String man=manager;
+      //  System.out.println("MangerID from function:"+man);
         if(!nume.isEmpty()) {
             Query queryRef = databaseEmp.child("Employees").child(manager).orderByKey();
             queryRef.addValueEventListener(new ValueEventListener() {
@@ -406,7 +589,8 @@ public class Login_Emp extends Activity  {
 
                                         String name=(String) mapObj.get("nume") + " " + (String) mapObj.get("prenume");
 
-                                        setAdapter(das,name);//setam adapter cu orele clientului
+                                        //System.out.println("MangerID from function2:"+man);
+                                        setAdapter(das,name,manager);//setam adapter cu orele clientului
                                         showShift(manager);
                                        // subscribeToAvailable(manager);
                                     } catch (JSONException e) {
@@ -436,9 +620,10 @@ public class Login_Emp extends Activity  {
         }
     }
 
-    private void setAdapter(List<String> das, String name) {
+    private void setAdapter(List<String> das, String name,String man) {
         dateToIntent=new ArrayList<String>(das);
         numele=name;
+        managerul=man;
 
 
     }
@@ -475,6 +660,13 @@ public class Login_Emp extends Activity  {
         }
     }
 
+
+
+
+    //notificare pentru manager
+
+    //pentru notificare
+
     public void showDate() throws ParseException {
         now = Calendar.getInstance();
        String dayCur=strDays[now.get(Calendar.DAY_OF_WEEK) - 1];
@@ -506,26 +698,7 @@ public class Login_Emp extends Activity  {
 
 
     }
-    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
 
-    // Create a Intent send by the notification
-   public static Intent makeNotificationIntent(Context context, String msg) {
-
-        clockState=true;
-        //am primit notification
-        Intent intent = new Intent( context, Login_Emp.class );
-        intent.putExtra( NOTIFICATION_MSG, msg );
-        return intent;
-    }
-
-
-
-
-    //notificare pentru manager
-
-    //pentru notificare
-
-    private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
     //crea
     private void pushNotification(String type,String topic,String notification,String clickAction) {
         JSONObject jPayload = new JSONObject();
@@ -533,15 +706,17 @@ public class Login_Emp extends Activity  {
         JSONObject jData = new JSONObject();
         try {
             jNotification.put("title", "Notification from employee");
-            //jNotification.put("body", "Your schedule has been posted!");
             jNotification.put("body", notification);
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
             jNotification.put("click_action", "OPEN_ACTIVITY_1");
             jNotification.put("icon", "ic_notification");
 
-            jData.put("picture", "http://opsbug.com/static/google-io.jpg");
+            //jData.put("picture", "http://opsbug.com/static/google-io.jpg");
 
+            jData.put("picture", "http://agape-com.reggaebeatmaker.com/wp-content/uploads/2015/02/schedule_icon_image.jpg");
+
+            //jData.put("picture", R.drawable.schedule_icon_image);
             switch(type) {
               /*  case "tokens":
                     JSONArray ja = new JSONArray();

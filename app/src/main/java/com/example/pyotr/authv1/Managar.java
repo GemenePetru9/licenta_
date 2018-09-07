@@ -1,8 +1,8 @@
 package com.example.pyotr.authv1;
 
 public class Managar extends User {
-    private String companyName;
     int numberOfEmployes;
+    private String companyName;
     private String companyField;
     private String role;
     private Boolean status;
@@ -28,9 +28,19 @@ public class Managar extends User {
     public int getNumberOfEmployes() {
         return numberOfEmployes;
     }
+
+    public void setNumberOfEmployes(int numberOfEmployes) {
+        this.numberOfEmployes = numberOfEmployes;
+    }
+
     public String getCompanyField() {
         return companyField;
     }
+
+    public void setCompanyField(String companyField) {
+        this.companyField = companyField;
+    }
+
     public String getCompanyName() {
         return companyName;
     }
@@ -39,20 +49,12 @@ public class Managar extends User {
         this.companyName = companyName;
     }
 
-    public void setNumberOfEmployes(int numberOfEmployes) {
-        this.numberOfEmployes = numberOfEmployes;
-    }
-
     public Boolean getSetSchedule() {
         return setSchedule;
     }
 
     public void setSetSchedule(Boolean setSchedule) {
         this.setSchedule = setSchedule;
-    }
-
-    public void setCompanyField(String companyField) {
-        this.companyField = companyField;
     }
 
     public String getRole() {

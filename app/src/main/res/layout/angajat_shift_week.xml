@@ -5,7 +5,7 @@
 
     <TextView
         android:id="@+id/userCurrent"
-        android:layout_width="376dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -22,133 +22,176 @@
         android:id="@+id/separator"
         android:layout_width="fill_parent"
         android:layout_height="2dip"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/userCurrent"
         android:layout_marginTop="-8dp"
-        android:background="#ffffff"
-        android:layout_alignParentLeft="true" />
+        android:background="#ffffff" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userCurrent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-8dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_selector"
+                android:text="My Shift" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_selector"
+                android:text="All Shifts" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_selector"
+                android:text="Open Shift" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textViewSapt"
-        android:layout_width="355dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="104dp"
         android:background="@android:color/holo_green_dark"
-        android:paddingLeft="10dp"
-        android:text="TextView" />
+        android:paddingLeft="10dp" />
 
     <GridLayout
         android:id="@+id/GridLayout2"
-        android:layout_width="65dp"
-        android:layout_height="324dp"
+        android:layout_width="130dp"
+        android:layout_height="339dp"
 
-        android:layout_alignStart="@+id/textViewSapt"
-        android:layout_below="@+id/textViewSapt"
-        android:layout_marginTop="15dp"
+        android:layout_alignBottom="@+id/gridViewDay"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
         android:columnCount="7"
-        android:visibility="visible">
+        android:visibility="invisible">
 
 
         <TextView
             android:id="@+id/textViewMun"
-            android:layout_width="60dp"
+            android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="0"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Mun"
+            android:text="Monday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewTue"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="1"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Tue"
+            android:text="Tuesday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewWed"
-            android:layout_width="60dp"
+            android:layout_width="130dp"
             android:layout_height="40dp"
 
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="2"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Wed"
+            android:text="Wednesday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewThu"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
 
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="3"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Thu"
+            android:text="Thursday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewFri"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
 
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="4"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Fri"
+            android:text="Friday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewSat"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="39dp"
 
             android:layout_column="0"
             android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="9dp"
             android:layout_row="5"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Sat"
+            android:text="Saturday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/textViewSun"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_column="0"
             android:layout_gravity="center"
             android:layout_row="6"
             android:background="@android:color/holo_green_dark"
             android:padding="2sp"
-            android:text="Sun"
+            android:text="Sunday"
             android:textAlignment="center"
             android:textSize="24sp" />
 
@@ -157,13 +200,110 @@
 
     <GridView
         android:id="@+id/gridViewWeek"
-        android:layout_width="211dp"
-        android:layout_height="421dp"
+        android:layout_width="224dp"
+        android:layout_height="361dp"
 
         android:layout_below="@+id/textViewSapt"
-        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@+id/GridLayout2"
         android:horizontalSpacing="@dimen/elementMargin"
         android:verticalSpacing="@dimen/elementMargin"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
+
+    <GridView
+        android:id="@+id/gridViewDay"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_alignParentStart="true"
+
+        android:layout_below="@+id/textViewSapt"
+
+        android:horizontalSpacing="@dimen/elementMargin"
+        android:verticalSpacing="@dimen/elementMargin"
+        android:visibility="invisible" />
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/OpenShiftLayout"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textViewSapt"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+
+        <LinearLayout
+            android:id="@+id/openShift"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewOpenShift"
+                android:layout_width="4dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="1"
+                android:background="#f7490a"
+                android:text="Shift Alert"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textViewOpen"
+                android:layout_width="116dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="1"
+                android:background="#f7490a"
+                android:text=" 08:000-08:00 Pozitie A"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/openShiftOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewOpenShiftAccept"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_green_dark"
+                android:drawableRight="@drawable/accept"
+                android:text="Take"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/textViewOpenShiftIgnore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="#edc11f"
+                android:drawableRight="@drawable/decline"
+                android:text="Ignore"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

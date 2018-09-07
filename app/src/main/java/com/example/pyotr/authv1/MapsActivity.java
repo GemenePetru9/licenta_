@@ -115,57 +115,43 @@ public class MapsActivity extends FragmentActivity implements
         LocationListener,
         ResultCallback<Status>{
     public static final String TAG ="MapsActiivty" ;
-    private Boolean GeofenceReady=false;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1 ;
     private static final int REQ_PERMISSION =999 ;
-    private GoogleMap mMap;
-    FirebaseUser usr;
-//adaugam geofence la manager curenr
-
-    private TextView mPlaceDetailsText;
-
-    private TextView mPlaceAttribution;
-
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
+    private static final long GEO_DURATION = 60 * 60 * 1000;
+    private static final String GEOFENCE_REQ_ID = "My Geofence";
+//adaugam geofence la manager curenr
+    private static final float GEOFENCE_RADIUS = 500.0f; // in meters
+    private static final int DEFAULT_ZOOM = 15;// minimum value=2.0 and maximum value=21.0.
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+    // Defined in mili seconds.
+    // This number in extremely low, and should be used only for debug
+    private final int UPDATE_INTERVAL =  1000;
+    private final int FASTEST_INTERVAL = 900;
+    private final int GEOFENCE_REQ_CODE = 0;
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
+    private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
+
+    // The entry points to the Places API.
+    FirebaseUser usr;
+    private Boolean GeofenceReady=false;
+    private GoogleMap mMap;
+    private TextView mPlaceDetailsText;
+    private TextView mPlaceAttribution;
     private boolean mLocationPermissionGranted;
-
-
     private CameraPosition mCameraPosition;
-
     private GoogleApiClient googleApiClient;
     private Marker geoFenceMarker;
     private Marker locationMarker;
     private DatabaseReference ref;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
-
-    // The entry points to the Places API.
-
     private GeoDataClient mGeoDataClient;
     private GoogleApi mGoogleApiClient;
-    private PlaceDetectionClient mPlaceDetectionClient;
-
-    // The entry point to the Fused Location Provider.
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
-    private Location mLastKnownLocation;
-
-
-    private Location lastLocation;//tuttorial
-    private LocationRequest locationRequest;
-    // Defined in mili seconds.
-    // This number in extremely low, and should be used only for debug
-    private final int UPDATE_INTERVAL =  1000;
-    private final int FASTEST_INTERVAL = 900;
-
-    private static final long GEO_DURATION = 60 * 60 * 1000;
-    private static final String GEOFENCE_REQ_ID = "My Geofence";
-    private static final float GEOFENCE_RADIUS = 500.0f; // in meters
-    private PendingIntent geoFencePendingIntent;
-    private final int GEOFENCE_REQ_CODE = 0;
-    private Button btnSaveGeofenceLatLng;
 
 
 
@@ -174,21 +160,32 @@ public class MapsActivity extends FragmentActivity implements
 
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
-
-    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 15;// minimum value=2.0 and maximum value=21.0.
-
-    // Keys for storing activity state.
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
+    private PlaceDetectionClient mPlaceDetectionClient;
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    // The geographical location where the device is currently located. That is, the last-known
+    // location retrieved by the Fused Location Provider.
+    private Location mLastKnownLocation;
+    private Location lastLocation;//tuttorial
+    private LocationRequest locationRequest;
+    private PendingIntent geoFencePendingIntent;
+    private Button btnSaveGeofenceLatLng;
     private  TextView textLat;
     private  TextView textLong;
-    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
-
     //incercare
     private GeoLocation CURRENT_LOCATION;
     private DatabaseReference database;
+    // Draw Geofence circle on GoogleMap
+    private Circle geoFenceLimits;
+
+
+
+    // Create a Intent send by the notification
+    public static Intent makeNotificationIntent(Context context, String msg) {
+        Intent intent = new Intent( context, MapsActivity.class );
+        intent.putExtra( NOTIFICATION_MSG, msg );
+        return intent;
+    }
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
@@ -275,7 +272,6 @@ public class MapsActivity extends FragmentActivity implements
 
     }
 
-
     /**
      * Sets up the options menu.
      * @param menu The options menu.
@@ -286,20 +282,6 @@ public class MapsActivity extends FragmentActivity implements
         getMenuInflater().inflate(R.menu.current_place_menu, menu);
         return true;
     }
-
-    /**
-     * Handles a click on the menu option to get a place.
-     * @param item The menu item to handle.
-     * @return Boolean.
-     */
-    /*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.option_get_place) {
-            drawGeofence();
-        }
-        return true;
-    }*/
 
     /**
      * Saves the state of the map when the activity is paused.
@@ -345,6 +327,7 @@ public class MapsActivity extends FragmentActivity implements
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -401,7 +384,6 @@ public class MapsActivity extends FragmentActivity implements
         markerForGeofence(latLng);
     }
 
-
     // Create a Location Marker
     private void markerLocation(LatLng latLng) {
         Log.i(TAG, "markerLocation("+latLng+")");
@@ -444,8 +426,6 @@ public class MapsActivity extends FragmentActivity implements
         Log.d(TAG, "onMarkerClickListener: " + marker.getPosition() );
         return false;
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -545,6 +525,7 @@ public class MapsActivity extends FragmentActivity implements
         }
 
     }
+
     // Get last known location
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation()");
@@ -600,6 +581,7 @@ public class MapsActivity extends FragmentActivity implements
                            */
         }
     }
+
     @Override
     public void onLocationChanged(final Location location) {
         Log.d(TAG, "onLocationChanged ["+location+"]");
@@ -659,6 +641,7 @@ public class MapsActivity extends FragmentActivity implements
 
 
     }
+
     // Write location coordinates on UI
     private void writeActualLocation(Location location) {
         textLat.setText( "Lat: " + location.getLatitude() );
@@ -715,8 +698,6 @@ public class MapsActivity extends FragmentActivity implements
         Log.w(TAG, "permissionsDenied()");
     }
 
-
-
     // Create a Geofence
     private Geofence createGeofence( LatLng latLng, float radius ) {
         Log.d(TAG, "createGeofence");
@@ -737,6 +718,7 @@ public class MapsActivity extends FragmentActivity implements
                 .addGeofence( geofence )
                 .build();
     }
+
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
         if ( geoFencePendingIntent != null )
@@ -776,8 +758,6 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
-    // Draw Geofence circle on GoogleMap
-    private Circle geoFenceLimits;
     private void drawGeofence() {
         Log.d(TAG, "drawGeofence()");
 
@@ -791,7 +771,6 @@ public class MapsActivity extends FragmentActivity implements
                 .radius( GEOFENCE_RADIUS );
         geoFenceLimits = mMap.addCircle( circleOptions );
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -819,33 +798,6 @@ public class MapsActivity extends FragmentActivity implements
             Log.e(TAG, "Geofence marker is null");
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Create a Intent send by the notification
-    public static Intent makeNotificationIntent(Context context, String msg) {
-        Intent intent = new Intent( context, MapsActivity.class );
-        intent.putExtra( NOTIFICATION_MSG, msg );
-        return intent;
-    }
-
-
-
-    private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
-    private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
 
     // Saving GeoFence marker with prefs mng
     private void saveGeofence() {

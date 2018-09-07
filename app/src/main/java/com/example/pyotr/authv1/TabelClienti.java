@@ -79,6 +79,21 @@ import static android.content.ContentValues.TAG;
 
 public class TabelClienti  extends Activity implements AdapterView.OnItemClickListener{
     private static final String AUTH_KEY = "key=AAAAMYJyzak:APA91bEr-ZQX0KVYJ1YbuOvvqHYVLpmhcF_FxHy-9akg46kNb3aIvR-lo4HXJiyTa0OucBZQfKWFIkgJktSgS8_xnaAi8QgIwsOuWwmtNptiNDr1mHqyt6TWmBRf6xCbcw4xa0cqJGuzLm-i_RLDA_bTcyckAJNwTQ";
+    private static final String TAG = "TabelClientiActivity";
+    ConstraintLayout constraintLayout;
+    GridLayout gridLayout;
+    GridLayout gridLayout2;
+    DatabaseReference databaseClienti;
+    DatabaseReference managerRef;
+    DatabaseReference databaseReference;
+    FirebaseUser usr;
+    int count = 0;
+    int countDays=0;
+    MultiColorPickerView multiColorPickerView;
+    ArrayList<String[]> saptamana = new ArrayList<String[]>();
+    ArrayList<Client> clienti_afisati = new ArrayList<>();
+    List<HashMap<String, String[]>> aList;
+    String[] from = {"Mon"};
     private TextView textViewData;
     private TextView textViewOra;
     private TextView textViewMun;
@@ -91,7 +106,6 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Boolean saptamana1=false;
     private Boolean saptamana2=false;
     private Boolean editMode=false;
-
     private Spinner spinner1;
     private Spinner spinner2;
     private String ora1;
@@ -101,13 +115,9 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private Button btnAddShift;
     private Button btnPublish;
     private Button btnWeek;
-
     private Button btnAddMap;
     private Button btnlogout;
-    ConstraintLayout constraintLayout;
-    GridLayout gridLayout;
     private Button btnDay;
-    GridLayout gridLayout2;
    private  GridView gridDay;
    private GridView gridShift;
    private GridView gridview;
@@ -116,47 +126,27 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
     private DayAdapter weekAdapter;
     private ShiftDayAdapter shiftDayAdapter;
     private Boolean firstSchedule=false;
-
-    private static final String TAG = "TabelClientiActivity";
-    DatabaseReference databaseClienti;
-    DatabaseReference managerRef;
-    DatabaseReference databaseReference;
-    FirebaseUser usr;
     private TextView textViewDay;
     private Calendar now;
     private ImageView nextDay;
+    // private static Map<Integer, String[]> saptamanal;
     private ImageView previousDay;
     private String[] strDays;
     private String[] strMonths;
     private String scheduleState="";
-    int count = 0;
-    int countDays=0;
     private Toolbar toolbarLate;
-    // private static Map<Integer, String[]> saptamanal;
-
     private Client user;
-
     private ImageView imageView;
+    private ImageView imageViewLate;
+
+    // private String[] day={"off","off","off","off","off","off","off"};
     private Button btnok;
     private  Button btncancel;
     private LinearLayout paletaCulori;
     private  int culoare=0;
-    MultiColorPickerView multiColorPickerView;
-
-    // private String[] day={"off","off","off","off","off","off","off"};
-
-
-    ArrayList<String[]> saptamana = new ArrayList<String[]>();
-
-    ArrayList<Client> clienti_afisati = new ArrayList<>();
    private ArrayList<Client> mEmpDataSet = new ArrayList<>();
-
-
-    List<HashMap<String, String[]>> aList;
-    String[] from = {"Mon"};
     // String[] from = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
     //int[] to = {R.id.data1, R.id.data2, R.id.data3, R.id.data4, R.id.data4, R.id.data5, R.id.data6, R.id.data7};
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,7 +178,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
            //at android.os.StrictMode$AndroidBlockGuardPolicy.onNetwork(
         }
 
-       FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
+        //FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid()+"_MANAGER");
+      FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
       //  FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid());
 
 
@@ -236,51 +227,12 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         btnPublish = (Button) findViewById(R.id.btnPublish);
         btnWeek = (Button) findViewById(R.id.btnWeek);
         btnDay = (Button) findViewById(R.id.btnDay);
-       btnAddMap = (Button) findViewById(R.id.btnAddGeofence);
         btnlogout= (Button) findViewById(R.id.btnLogOutManager);
-        Button btnsendNot=(Button)findViewById(R.id.btnSendNotifcation) ;
-        paletaCulori = (LinearLayout) findViewById(R.id.paletaCulori);
-        btnok = (Button) findViewById(R.id.btnOk);
-        btncancel = (Button) findViewById(R.id.btnCancel);
-        multiColorPickerView = findViewById(R.id.multiColorPickerView);
+
        // toolbarLate=(Toolbar) findViewById(R.id.toolbarLate) ;
 
 
 
-        Drawable myDrawable = getResources().getDrawable(R.drawable.selector);
-
-        multiColorPickerView.addSelector(myDrawable, new ColorListener() {
-            @Override
-            public void onColorSelected(ColorEnvelope envelope) {
-                //int color = envelope.getColor();
-                culoare = envelope.getColor();
-                // int[] rgb = envelope.getRgb();
-                String htmlCode = envelope.getHtmlCode();
-
-                //imageView.setBackgroundColor(color);
-                // TODO
-
-            }
-        });
-
-        btnok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(culoare==0) {
-                    Toast.makeText(getApplicationContext(), "Selectati o culoare", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                   // imageView.setBackgroundColor(culoare);
-                    paletaCulori.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-        btncancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                paletaCulori.setVisibility(View.INVISIBLE);
-            }
-        });
 
         now = Calendar.getInstance();
 
@@ -356,21 +308,22 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         gridShift = (GridView) findViewById(R.id.gridViewShift);
 
 
-      /* Bundle e = getIntent().getExtras();
-        if (e != null) {
+        Bundle e = getIntent().getExtras();
+        if (e != null&&e.getString("numeAng")!=null ){
 
 
             String numeAngSick = e.getString("numeAng");
             System.out.println("Numele ang Sick" + numeAngSick);
             Intent intent = new Intent(getBaseContext(), Replacement.class);
-            intent.putExtra("key", numeAngSick);
+            intent.putExtra("numeAngSick", numeAngSick);
+            intent.putExtra("managerId",usr.getUid());
             startActivity(intent);
 
         }
         else
         {
-            System.out.println("Numele ang Sicke Bundle este null");
-        }*/
+            System.out.println("Numele ang Sick e Bundle este null");
+        }
 
 
         //Prepare DataSet
@@ -378,6 +331,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
        // checkScheduleNew();
 
+        gridDay.setAdapter(null);
        prepareDataSet();
 
 
@@ -399,12 +353,6 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         gridShift.setOnItemClickListener(this);
 
 
-        btnsendNot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pushNotification("topic",usr.getUid(),"Your schedule has been posted!","SCHEDULE");
-            }
-        });
         textViewMun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -603,6 +551,14 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
 
                         }
+                        else
+                        {
+                            pushNotification("topic",usr.getUid(),"Your schedule has been posted!","SCHEDULE");
+                            databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
+                            databaseReference.setValue(mEmpDataSet.get(i).getDay());
+
+
+                        }
                        /* if (saptamana1) {
                             pushNotification("topic",usr.getUid(),"Your schedule has been posted!");
                             databaseReference= FirebaseDatabase.getInstance().getReference("Employees").child(usr.getUid()).child(clientInfo.getClientId()).child("day");
@@ -637,10 +593,12 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
 
 
+                      //golim pentru a evita duplicarea
 
 
 
                     }
+                mEmpDataSet.clear();
                     Log.v("Database update", "update");
                 }
 
@@ -685,6 +643,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 //face shift greeview insizibil
                 setEmpAdapter();
                 setShiftAdapter();
+                nextDay.setEnabled(true);
+                previousDay.setEnabled(true);
                 gridview.setVisibility(View.VISIBLE);
                 gridShift.setVisibility(View.VISIBLE);
                 gridLayout.setVisibility(View.VISIBLE);
@@ -705,22 +665,7 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             }
         });
 
-        btnAddMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(intent);
 
-               /* FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                DatabaseReference usersRef = ref.child("locations");
-                String userId = usersRef.push().getKey();
-                usersRef.child(userId).child("name").setValue("User1");
-                usersRef.child(userId).child("latitudine").setValue(47.64);
-                usersRef.child(userId).child("longitudine").setValue(26.26);*/
-
-            }
-        });
 
         btnlogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -767,23 +712,6 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
         constraintLayout.setVisibility(View.VISIBLE);
         try {
             setOra();
-           ImageView colorPallete=findViewById(R.id.imageViewColorPallette);
-            culoare=0;
-
-            colorPallete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "Color Picker", Toast.LENGTH_SHORT).show();
-                    // multiColorPickerView.setVisibility(View.VISIBLE);
-                    paletaCulori.setVisibility(View.VISIBLE);
-                    paletaCulori.bringToFront();
-                    culoare=0;
-                }
-            });
-
-
-
-
             btnAddShift.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -908,7 +836,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
             jNotification.put("click_action", click);
             jNotification.put("icon", "ic_notification");
 
-            jData.put("picture", "http://opsbug.com/static/google-io.jpg");
+           // jData.put("picture", R.drawable.schedule_icon_image);
+            jData.put("picture", "http://agape-com.reggaebeatmaker.com/wp-content/uploads/2015/02/schedule_icon_image.jpg");
 
             switch(type) {
               /*  case "tokens":
@@ -1079,6 +1008,11 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 startActivity(intent);
                 return true;
             }
+            case R.id.addGeofence: {
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(intent);
+                break;
+            }
             case R.id.showToken:
             {
                 AlertDialog.Builder builder;
@@ -1212,11 +1146,16 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                     //CustomAdapter adapter = new CustomAdapter(getBaseContext(), aList,R.layout.shift,from, to);
                     // gridShift.setAdapter(adapter);
                     //setEmpAdapter();
+
+
                     setWeekAdapter();
+                    nextDay.setEnabled(false);
+                    previousDay.setEnabled(false);
                     // gridDay.setStretchMode();
                     btnWeek.setVisibility(View.INVISIBLE);
                     btnDay.setVisibility(View.VISIBLE);
                    textViewDay.setText(mEmpDataSet.get(0).getSapt()+", "+strMonths[now.get(Calendar.MONTH)]  + ", " + now.get(Calendar.YEAR));
+                    System.out.println("Schedule data:"+mEmpDataSet.get(0).getSapt());
 
 
                    Integer zicurenta=now.get(Calendar.DATE);
@@ -1255,8 +1194,8 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
                 {
                     //atunci face primul orar
                     firstSchedule=true;
-                    FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid());
+                   // FirebaseMessaging.getInstance().subscribeToTopic(usr.getUid()+"_MANAGER");
+                   // FirebaseMessaging.getInstance().unsubscribeFromTopic(usr.getUid());
 
                     setEmpAdapter();
                     setShiftAdapter();
@@ -1315,10 +1254,14 @@ public class TabelClienti  extends Activity implements AdapterView.OnItemClickLi
 
 
     private void prepareDataSet() {
+
         Query queryRef = databaseClienti.child("Employees").child(usr.getUid()).orderByKey();
+
+        mEmpDataSet=new ArrayList<>();
         queryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mEmpDataSet.clear();
                 if (dataSnapshot != null && dataSnapshot.getValue() != null) {
                     Log.i("Count angajati ", "" + dataSnapshot.getChildrenCount());
                     Map<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();

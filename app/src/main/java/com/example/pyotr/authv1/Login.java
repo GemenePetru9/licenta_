@@ -38,17 +38,15 @@ public class Login extends Activity implements View.OnClickListener{
 
 
     private static final String TAG ="MyActivity" ;
+    DatabaseReference adminRef;
+    DatabaseReference managerRef;
+    DatabaseReference empRef;
     private FirebaseAuth mAuth;
     private  FirebaseAuth.AuthStateListener mAuthListener;
     private Button buttonLogin;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    DatabaseReference adminRef;
-    DatabaseReference managerRef;
-    DatabaseReference empRef;
    // private String rol="";
-
-
     private ProgressDialog progressDialog;
 
     @Override
@@ -152,8 +150,6 @@ public class Login extends Activity implements View.OnClickListener{
                             progressDialog.dismiss();
 
                             finish();
-                            //setContentView(R.layout.succes);//daca a reusit login ===>succes
-                            //startActivity(new Intent(getApplicationContext(),Succes.class))
 
                             final String[] rol = {""};
                             adminRef.child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
@@ -206,28 +202,6 @@ public class Login extends Activity implements View.OnClickListener{
                                     else if(rol[0].equals("angajat"))
                                     {
                                         startActivity(new Intent(getApplicationContext(),Login_Emp.class));
-                                        //luam manager id din angati tabel si apoi mergem la Employees si aflam angajatul current dupa nume
-                                      /*  empRef.child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                                System.out.println("Ang:"+dataSnapshot);
-                                               String  manager = dataSnapshot.getValue(Employee.class).getManager();
-                                                System.out.println("Ang manager:"+manager);
-                                                Intent intent = new Intent(getBaseContext(), Login_Emp.class);
-                                                intent.putExtra("key",manager);
-                                                startActivity(intent);
-
-                                            }
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-                                                // Getting Post failed, log a message
-                                                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                                                // ...
-                                            }
-
-
-                                        });*/
 
                                     }
 
@@ -248,6 +222,7 @@ public class Login extends Activity implements View.OnClickListener{
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "loginUserWIthEmail:failure", task.getException());
+                            progressDialog.dismiss();
                             Toast.makeText(getApplicationContext(), "Login failed.",
                                     Toast.LENGTH_SHORT).show();
                             //updateUI(null);

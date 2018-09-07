@@ -60,6 +60,10 @@ public class AddEmployees extends Activity {
     EditText edittext2;
     TextView textViewNumarAngajati;
     String GetItem;
+    MultiColorPickerView multiColorPickerView;
+    DatabaseReference databaseClienti;
+    DatabaseReference managerRef;
+    int counter=0;
     private int numberOfEmp=0;
     private String userid="";
     private String value="";
@@ -69,12 +73,6 @@ public class AddEmployees extends Activity {
     private Button btnok;
     private  Button btncancel;
     private LinearLayout paletaCulori;
-    MultiColorPickerView multiColorPickerView;
-    DatabaseReference databaseClienti;
-    DatabaseReference managerRef;
-
-
-    int counter=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

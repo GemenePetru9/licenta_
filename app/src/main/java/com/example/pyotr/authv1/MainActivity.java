@@ -42,6 +42,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MainActivity extends Activity implements  View.OnClickListener{
 
     private static final String TAG ="MyActivity" ;
+    DatabaseReference databaseManager;
+    DatabaseReference databaseEmp;
+    DatabaseReference databaseUsers;
     private FirebaseAuth mAuth;
     private  FirebaseAuth.AuthStateListener mAuthListener;
     private Button buttonRegister;
@@ -54,7 +57,6 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private EditText editTextEmpNume;
     private EditText editTextEmpPrenume;
     private EditText editTextEmpManager;
-
     private TextView textViewLog;
     private TextView textInfo;
     private RadioGroup radioGroup;
@@ -62,15 +64,6 @@ public class MainActivity extends Activity implements  View.OnClickListener{
     private  RadioButton radioButton2;
     private LinearLayout layout1;
     private ConstraintLayout angajat;
-
-
-
-    DatabaseReference databaseManager;
-    DatabaseReference databaseEmp;
-    DatabaseReference databaseUsers;
-
-
-
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,22 +182,7 @@ public  void setVisibleAngajator()
                 //inca 2 layout pentru angajat sau angajator
 
                verificationUser();
-               if(radioButton1.isChecked())
-               {
-                   //angajator
 
-                   setVisibleAngajator();
-                   setVisibleOff();
-                  //layout1.setVisibility(View.VISIBLE);
-
-               }
-               else if(radioButton2.isChecked())
-               {
-                   setVisibleOff();
-                   angajat.setVisibility(View.VISIBLE);
-                   buttonStep2.setVisibility(View.VISIBLE);
-                   //angajat
-               }
                 //registerUser();
                 break;
             case R.id.buttonRegister2:
@@ -254,6 +232,22 @@ public  void setVisibleAngajator()
             Toast.makeText(getApplicationContext(), "Pentru a continua bifati casutele de mai jos.",
                     Toast.LENGTH_SHORT).show();
         }
+        if(radioButton1.isChecked())
+        {
+            //angajator
+
+            setVisibleAngajator();
+            setVisibleOff();
+            //layout1.setVisibility(View.VISIBLE);
+
+        }
+        else if(radioButton2.isChecked())
+        {
+            setVisibleOff();
+            angajat.setVisibility(View.VISIBLE);
+            buttonStep2.setVisibility(View.VISIBLE);
+            //angajat
+        }
 
     }
 
@@ -297,21 +291,7 @@ public  void setVisibleAngajator()
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(getApplicationContext(), "Registration Succes.",
                                     Toast.LENGTH_SHORT).show();
-                            System.out.println("User id:"+mAuth.getUid());
                             addUser(mAuth.getUid());
-
-
-
-                           /* String value="";
-                            value+=mAuth.getUid();
-                            value+=" "+editTextCompanyEmployees.getText().toString();
-                            Intent intent = new Intent(getBaseContext(), AddEmployees.class);
-                            //Intent intent = new Intent(getBaseContext(), Login.class);
-                            intent.putExtra("key",value);
-                            startActivity(intent);*/
-
-                            //FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -320,7 +300,6 @@ public  void setVisibleAngajator()
                             //updateUI(null);
                         }
 
-                        // ...
                     }
                 });
 
@@ -420,6 +399,71 @@ public  void setVisibleAngajator()
                 });
 
             Toast.makeText(this,"Manager adaugat", Toast.LENGTH_LONG).show();
+
+
+            //la crearea unui cont adaugam automat my shift in tabel
+
+            FirebaseUser usr= FirebaseAuth.getInstance().getCurrentUser();
+            String uid = usr.getUid();
+            DatabaseReference myshift= FirebaseDatabase
+                    .getInstance()
+                    .getReference("Employees")
+                    .child(uid);
+            DatabaseReference pushRef = myshift.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
+            String id = pushRef.getKey();
+            Client userBaza=new Client(id,"My Shift"," ","Manager",R.color.colorOverlay);
+
+
+            pushRef.setValue(userBaza)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugare My Shift in baza de date:success");
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugare My Shift in baza de date:Failed");
+                        }
+                    });
+
+
+
+
+            DatabaseReference openShift= FirebaseDatabase
+                    .getInstance()
+                    .getReference("Employees")
+                    .child(uid)
+                    .child("open_shift_id");
+            //DatabaseReference pushRefOpen = openShift.push();//fiecare admin are tabelul lui si are copii fiecare angajat adaugat
+
+            Client userOpen=new Client("open_shift_id","Open","Shift","Manager",R.color.colorOverlay);
+
+
+            openShift.setValue(userOpen)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Write was successful!
+                            Log.d(TAG, "adaugare Open Shift in baza de date:success");
+
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Write failed
+                            // ...
+                            Log.d(TAG, "adaugare Open Shift in baza de date:Failed");
+                        }
+                    });
 
 
 

@@ -1,15 +1,15 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:screenOrientation="landscape"
-
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:screenOrientation="landscape"
     >
 
 
@@ -46,7 +46,7 @@
     <TextView
         android:id="@+id/button1"
         android:layout_column="2"
-        android:layout_row="0" android:layout_gravity="center"
+        android:layout_gravity="center" android:layout_row="0"
     android:text="9am" />
 
     <TextView
@@ -72,7 +72,7 @@
     <TextView
     android:id="@+id/button12"
     android:layout_column="7"
-    android:layout_row="0" android:layout_gravity="center"
+    android:layout_gravity="center" android:layout_row="0"
     android:text="2pm" />
     <TextView
         android:id="@+id/button17"
@@ -87,7 +87,7 @@
     <TextView
         android:id="@+id/button14"
         android:layout_column="10"
-        android:layout_row="0" android:layout_gravity="center"
+        android:layout_gravity="center" android:layout_row="0"
         android:text="5pm" />
     <TextView
         android:id="@+id/button15"

@@ -29,7 +29,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String FCM_PARAM = "picture";
     private static final String CHANNEL_NAME = "FCM";
     private static final String CHANNEL_DESC = "Firebase Cloud Messaging";
-    private static final String TAG ="FirebaseMessagingServic";
+    private static final String TAG ="FirebaseMessaging";
     private int numMessages = 0;
 
     @Override

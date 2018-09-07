@@ -69,57 +69,43 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         ResultCallback<Status> {
 
     public static final String TAG ="MapsActiivty" ;
-    private static boolean clock=false;
-    private Boolean GeofenceReady=false;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1 ;
     private static final int REQ_PERMISSION =999 ;
-    private GoogleMap mMap;
-
-    private TextView mPlaceDetailsText;
-
-    private TextView mPlaceAttribution;
-
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
-    private boolean mLocationPermissionGranted;
-
-
-    private CameraPosition mCameraPosition;
-
-    private GoogleApiClient googleApiClient;
-    private Marker geoFenceMarker;
-    private Marker locationMarker;
-    private DatabaseReference ref;
-    DatabaseReference empRef;
-    private GeoFire geoFire;
-    private GeoQuery geoQuery;
-
-    // The entry points to the Places API.
-
-    private GeoDataClient mGeoDataClient;
-    private GoogleApi mGoogleApiClient;
-    private PlaceDetectionClient mPlaceDetectionClient;
-
-    // The entry point to the Fused Location Provider.
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
-    private Location mLastKnownLocation;
-
-
-    private Location lastLocation;//tuttorial
-    private LocationRequest locationRequest;
+    private static final long GEO_DURATION = 60 * 60 * 1000;
+    private static final String GEOFENCE_REQ_ID = "working area";
+    private static final float GEOFENCE_RADIUS = 500.0f; // in meters
+    private static final int DEFAULT_ZOOM = 15;// minimum value=2.0 and maximum value=21.0.
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
+    private static boolean clock=false;
     // Defined in mili seconds.
     // This number in extremely low, and should be used only for debug
     private final int UPDATE_INTERVAL =  1000;
     private final int FASTEST_INTERVAL = 900;
-
-    private static final long GEO_DURATION = 60 * 60 * 1000;
-    private static final String GEOFENCE_REQ_ID = "My Geofence";
-    private static final float GEOFENCE_RADIUS = 500.0f; // in meters
-    private PendingIntent geoFencePendingIntent;
     private final int GEOFENCE_REQ_CODE = 0;
-    private Button btnSaveGeofenceLatLng;
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
+    private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
+
+    // The entry points to the Places API.
+    DatabaseReference empRef;
+    private Boolean GeofenceReady=false;
+    private GoogleMap mMap;
+    private TextView mPlaceDetailsText;
+    private TextView mPlaceAttribution;
+    private boolean mLocationPermissionGranted;
+    private CameraPosition mCameraPosition;
+    private GoogleApiClient googleApiClient;
+    private Marker geoFenceMarker;
+    private Marker locationMarker;
+    private DatabaseReference ref;
+    private GeoFire geoFire;
+    private GeoQuery geoQuery;
+    private GeoDataClient mGeoDataClient;
+    private GoogleApi mGoogleApiClient;
 
 
 
@@ -128,21 +114,37 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
 
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
-
-    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 15;// minimum value=2.0 and maximum value=21.0.
-
-    // Keys for storing activity state.
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
+    private PlaceDetectionClient mPlaceDetectionClient;
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    // The geographical location where the device is currently located. That is, the last-known
+    // location retrieved by the Fused Location Provider.
+    private Location mLastKnownLocation;
+    private Location lastLocation;//tuttorial
+    private LocationRequest locationRequest;
+    private PendingIntent geoFencePendingIntent;
+    private Button btnSaveGeofenceLatLng;
     private  TextView textLat;
     private  TextView textLong;
-    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
-
     //incercare
     private GeoLocation CURRENT_LOCATION;
     private DatabaseReference database;
+    // Draw Geofence circle on GoogleMap
+    private Circle geoFenceLimits;
+
+    // Create a Intent send by the notification
+    public static Intent makeNotificationIntent(Context context, String msg) {
+        Log.i(TAG, "Entering: ne Intoarcem la Login Emp");
+
+        clock=true;
+        System.out.println("Clock is true");
+        Intent intent = new Intent( context, MapsActivity2.class );
+        intent.putExtra( NOTIFICATION_MSG, msg );
+        return intent;
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +183,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         createGoogleApi();
         //startGeofence();
     }
-
 
     // Create GoogleApiClient instance
     private void createGoogleApi() {
@@ -250,6 +251,7 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         }
 
     }
+
     // GoogleApiClient.ConnectionCallbacks connected
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -259,6 +261,7 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         //startGeofence();
         //getLocation();
     }
+
     // GoogleApiClient.ConnectionCallbacks suspended
     @Override
     public void onConnectionSuspended(int i) {
@@ -302,6 +305,7 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         checkClock();
 
     }
+
     private void startLocationUpdates(){
         Log.i(TAG, "startLocationUpdates()");
         locationRequest = LocationRequest.create()
@@ -325,12 +329,9 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
                            */
         }
     }
+
     // Write location coordinates on UI
     private void writeActualLocation(Location location) {
-        // textLat.setText( "Lat: " + location.getLatitude() );
-        // textLong.setText( "Long: " + location.getLongitude() );
-        //Log.i(TAG,"ActualLoc:Lat: " + location.getLatitude());
-      //  Log.i(TAG,"ActualLocLastLOc:Long: " + location.getLongitude());
         LatLng loc=new LatLng(location.getLatitude(),location.getLongitude());
 
         Log.i(TAG, "markerLocation("+loc+")");
@@ -357,7 +358,9 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
             //Intent to clock in
             Intent intent = new Intent(getBaseContext(), Login_Emp.class);
             intent.putExtra("keyMap", true);
+            finish();
             startActivity(intent);
+
         }
         else
         {
@@ -374,8 +377,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
     private void permissionsDenied() {
         Log.w(TAG, "permissionsDenied()");
     }
-
-
 
     // Create a Geofence
     private Geofence createGeofence(LatLng latLng, float radius ) {
@@ -397,6 +398,7 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
                 .addGeofence( geofence )
                 .build();
     }
+
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
         if ( geoFencePendingIntent != null )
@@ -424,7 +426,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         return super.onCreateView(parent, name, context, attrs);
     }
 
-
     @Override
     public void onResult(@NonNull Status status) {
         Log.i(TAG, "onResult: " + status);
@@ -437,7 +438,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
             // inform about fail
         }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -483,25 +483,6 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
         });*/
     }
 
-    // Create a Intent send by the notification
-    public static Intent makeNotificationIntent(Context context, String msg) {
-        Log.i(TAG, "Entering: ne Intoarcem la Login Emp");
-
-        clock=true;
-        System.out.println("Clock is true");
-        Intent intent = new Intent( context, MapsActivity2.class );
-        intent.putExtra( NOTIFICATION_MSG, msg );
-        return intent;
-
-
-
-    }
-
-
-
-    private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
-    private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
-
     // Saving GeoFence marker with prefs mng
     private void saveGeofence() {
         Log.d(TAG, "saveGeofence()");
@@ -526,8 +507,7 @@ public class MapsActivity2 extends FragmentActivity implements  OnMapReadyCallba
             drawGeofence();
         }
     }
-    // Draw Geofence circle on GoogleMap
-    private Circle geoFenceLimits;
+
     private void drawGeofence() {
         Log.d(TAG, "drawGeofence()");
 

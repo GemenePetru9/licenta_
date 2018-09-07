@@ -17,9 +17,19 @@ public class Client {
      private String clientId;
      private String shift;
      private String sapt;
+     private Boolean available=true;
      private int culoare;
-    //private String[] day={"off","off","off","off","off","off","off"};
     private Map<String,String> day=createMap();
+    public Client() {
+    }
+
+    public Client(String clientId,String nume, String prenume, String pozitie,int culoare) {
+        this.nume = nume;
+        this.prenume = prenume;
+        this.pozitie = pozitie;
+        this.clientId=clientId;
+        this.culoare=culoare;
+    }
 
     private Map<String,String> createMap() {
 
@@ -34,19 +44,14 @@ public class Client {
             return myMap;
     }
 
-    //Map<String,String> shift_per_day;
-    public Client() {
+    public Boolean getAvailable() {
+        return available;
     }
 
-    public Client(String clientId,String nume, String prenume, String pozitie,int culoare) {
-        this.nume = nume;
-        this.prenume = prenume;
-        this.pozitie = pozitie;
-        this.clientId=clientId;
-        this.culoare=culoare;
+    public void setAvailable(Boolean available) {
+        this.available = available;
     }
-
-    /*public Client(Map<String, String> shift_per_day) {
+/*public Client(Map<String, String> shift_per_day) {
             this.shift_per_day = shift_per_day;
         }
     */
@@ -63,36 +68,36 @@ public class Client {
         return clientId;
     }
 
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
     public String getNume() {
         return nume;
+    }
+
+    public void setNume(String nume) {
+        this.nume = nume;
     }
 
     public String getPrenume() {
         return prenume;
     }
 
-    public String getPozitie() {
-        return pozitie;
-    }
-    public String toString() {
-        return nume+" "+prenume+" "+pozitie;
-    }
-
-
-    public void setNume(String nume) {
-        this.nume = nume;
-    }
-
     public void setPrenume(String prenume) {
         this.prenume = prenume;
+    }
+
+    public String getPozitie() {
+        return pozitie;
     }
 
     public void setPozitie(String pozitie) {
         this.pozitie = pozitie;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public String toString() {
+        return nume+" "+prenume+" "+pozitie;
     }
 
     public String toStringShift() {
@@ -112,13 +117,10 @@ public class Client {
         return sapt;
     }
 
-    public void setDay(Map<String, String> day) {
-        this.day = day;
-    }
-
     public void setSapt(String sapt) {
         this.sapt = sapt;
     }
+
     public void resetSapt() {
 
         this.day =createMap();
@@ -127,12 +129,17 @@ public class Client {
     public String getShift() {
         return shift;
     }
+
     public void setShift(String shift) {
         this.shift = shift;
     }
 
     public Map<String, String> getDay() {
         return day;
+    }
+
+    public void setDay(Map<String, String> day) {
+        this.day = day;
     }
 
     public void setDay(String  key, String shift) {

@@ -12,10 +12,10 @@
         android:layout_marginTop="@dimen/elementMargin"
         android:background="@color/overlay"
         android:padding="@dimen/cellText_padding"
-        android:textColor="@color/textColor"
-        android:textSize="@dimen/cellText_textSize"
         android:text="Add Shift"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/cellText_textSize"/>
 
 
 </RelativeLayout>
